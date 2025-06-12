@@ -1,151 +1,185 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Import useEffect
 import { useNavigate } from 'react-router-dom';
 
-const CompleteProfile = () => {
-  const [profileData, setProfileData] = useState({
-    fullName: '',
-    skills: '',
-    bio: '',
-    discordHandle: '',
-    profilePicUrl: '',
-  });
-  const [previewUrl, setPreviewUrl] = useState('');
+const CompleteProfile = ({ onProfileComplete }) => {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    fullName: '',
+    bio: '',
+    // FIX: Initialize skillsOffered and skillsNeeded as empty strings
+    // The input fields will directly control these string values.
+    skillsOffered: '', // Initialize as an empty string
+    skillsNeeded: '',  // Initialize as an empty string
+  });
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
+  // Optional: Fetch existing profile data if user revisits this page or partially filled
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchExistingProfile = async () => {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/profile/me', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (res.ok) {
-        const user = await res.json();
-        setProfileData({
-          fullName: user.fullName || '',
-          skills: user.skills?.join(', ') || '',
-          bio: user.bio || '',
-          discordHandle: user.discordHandle || '',
-          profilePicUrl: user.profilePicUrl || ''
+      if (!token) return;
+
+      try {
+        const response = await fetch('http://localhost:5000/api/profile/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
         });
-        setPreviewUrl(user.profilePicUrl || '');
+        const data = await response.json();
+        if (response.ok && data) {
+          setFormData({
+            fullName: data.fullName || '',
+            bio: data.bio || '',
+            // FIX: Convert fetched arrays to comma-separated strings for input fields
+            skillsOffered: Array.isArray(data.skillsOffered) ? data.skillsOffered.join(', ') : '',
+            skillsNeeded: Array.isArray(data.skillsNeeded) ? data.skillsNeeded.join(', ') : '',
+          });
+        }
+      } catch (err) {
+        console.error('Error fetching existing profile:', err);
+        // Do not block if profile fetch fails, user can still fill form
       }
     };
-    fetchProfile();
-  }, []);
+    fetchExistingProfile();
+  }, []); // Run once on component mount
 
-  const handleChange = (field, value) => {
-    setProfileData(prev => ({ ...prev, [field]: value }));
-    if (field === 'profilePicUrl') {
-      setPreviewUrl(value);
-    }
-  };
-
-  const validateDiscord = (discord) => {
-    return /^.+#\d{4}$/.test(discord); // username#1234
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    // This general handleChange works for all fields, storing the input value as a string.
+    setFormData({ ...formData, [name]: value });
+    setErrorMessage(''); // Clear error on input change
+    setSuccessMessage(''); // Clear success on input change
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (profileData.discordHandle && !validateDiscord(profileData.discordHandle)) {
-      return alert('Invalid Discord handle format (expected username#1234)');
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login'); // Redirect if not authenticated
+      return;
     }
 
     try {
-      const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:5000/api/profile/complete', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(profileData)
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          bio: formData.bio,
+          // When sending to backend, convert the comma-separated string from the input
+          // into an array, then trim each item and filter out empty strings.
+          skillsOffered: formData.skillsOffered.split(',').map(s => s.trim()).filter(s => s),
+          skillsNeeded: formData.skillsNeeded.split(',').map(s => s.trim()).filter(s => s),
+        }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        navigate('/');
+        setSuccessMessage(data.message || 'Profile completed successfully!');
+        localStorage.setItem('profileComplete', 'true'); // Update localStorage
+        onProfileComplete(); // Update App.js state
+        // Give a brief moment for success message to show, then navigate
+        setTimeout(() => {
+          navigate('/'); // Redirect to dashboard after profile is complete
+        }, 1500); // 1.5 seconds delay
       } else {
-        alert('Profile update failed');
+        setErrorMessage(data.message || 'Failed to complete profile');
+        console.error('Profile completion failed (backend response):', data);
       }
     } catch (err) {
-      console.error('Profile error:', err);
-      alert('Something went wrong');
+      console.error('Profile completion error (frontend/network):', err);
+      setErrorMessage('An error occurred. Please try again.');
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#141416] flex justify-center items-center py-10 px-4">
-      <div className="w-full max-w-xl bg-[#533F4D] rounded-2xl p-6 shadow-xl">
-        <h2 className="text-white text-2xl font-semibold text-center mb-6">
-          {profileData.fullName ? 'Edit Profile' : 'Complete Your Profile'}
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="text-white block mb-1">Full Name</label>
+    <div className="flex justify-center items-center h-screen bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-md w-96">
+        <h2 className="text-2xl font-bold mb-6 text-center">Complete Your Profile</h2>
+        
+        {errorMessage && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <span className="block sm:inline">{errorMessage}</span>
+          </div>
+        )}
+        {successMessage && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <span className="block sm:inline">{successMessage}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label htmlFor="fullName" className="block text-gray-700 text-sm font-bold mb-2">
+              Full Name
+            </label>
             <input
               type="text"
-              value={profileData.fullName}
-              onChange={(e) => handleChange('fullName', e.target.value)}
-              className="w-full px-4 py-2 rounded bg-white/10 border border-white/20 text-white focus:outline-none"
+              id="fullName"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleChange}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               required
             />
           </div>
-
-          <div>
-            <label className="text-white block mb-1">Your Skills (comma separated)</label>
-            <input
-              type="text"
-              value={profileData.skills}
-              onChange={(e) => handleChange('skills', e.target.value)}
-              className="w-full px-4 py-2 rounded bg-white/10 border border-white/20 text-white focus:outline-none"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="text-white block mb-1">Bio</label>
+          <div className="mb-4">
+            <label htmlFor="bio" className="block text-gray-700 text-sm font-bold mb-2">
+              Bio
+            </label>
             <textarea
-              value={profileData.bio}
-              onChange={(e) => handleChange('bio', e.target.value)}
-              className="w-full px-4 py-2 rounded bg-white/10 border border-white/20 text-white min-h-[100px] resize-none focus:outline-none"
-              required
-            />
+              id="bio"
+              name="bio"
+              value={formData.bio}
+              onChange={handleChange}
+              rows="3"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            ></textarea>
           </div>
-
-          <div>
-            <label className="text-white block mb-1">Discord Handle (username#1234)</label>
+          <div className="mb-4">
+            <label htmlFor="skillsOffered" className="block text-gray-700 text-sm font-bold mb-2">
+              Skills You Can Offer (comma-separated)
+            </label>
             <input
               type="text"
-              value={profileData.discordHandle}
-              onChange={(e) => handleChange('discordHandle', e.target.value)}
-              className="w-full px-4 py-2 rounded bg-white/10 border border-white/20 text-white focus:outline-none"
+              id="skillsOffered"
+              name="skillsOffered"
+              // FIX: Directly use formData.skillsOffered as value. It will be a string.
+              value={formData.skillsOffered} 
+              onChange={handleChange}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
-
-          <div>
-            <label className="text-white block mb-1">Profile Picture URL</label>
+          <div className="mb-6">
+            <label htmlFor="skillsNeeded" className="block text-gray-700 text-sm font-bold mb-2">
+              Skills You Need (comma-separated)
+            </label>
             <input
-              type="url"
-              value={profileData.profilePicUrl}
-              onChange={(e) => handleChange('profilePicUrl', e.target.value)}
-              className="w-full px-4 py-2 rounded bg-white/10 border border-white/20 text-white focus:outline-none"
+              type="text"
+              id="skillsNeeded"
+              name="skillsNeeded"
+              // FIX: Directly use formData.skillsNeeded as value. It will be a string.
+              value={formData.skillsNeeded} 
+              onChange={handleChange}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
-            {previewUrl && (
-              <img
-                src={previewUrl}
-                alt="Preview"
-                className="mt-3 w-24 h-24 rounded-full border-2 border-white object-cover"
-              />
-            )}
           </div>
-
-          <button
-            type="submit"
-            className="w-full py-2 bg-[#A3492F] text-white font-semibold rounded hover:bg-[#EE7C53]"
-          >
-            Save Profile
-          </button>
+          <div className="flex items-center justify-between">
+            <button
+              type="submit"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              Save Profile
+            </button>
+          </div>
         </form>
       </div>
     </div>

@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const profileRoutes = require('./routes/profileRoutes');
+const userRoutes = require('./routes/userRoutes'); 
 const connectDB = require('./config/db');
 
 const dotenv = require('dotenv');
@@ -22,6 +23,7 @@ app.use('/api/auth', authRoutes);
 
 // Add this with other route middleware
 app.use('/api/profile', profileRoutes);
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);

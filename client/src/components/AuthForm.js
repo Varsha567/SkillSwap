@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+
 
 const AuthForm = ({ isLogin, onSubmit, formData, handleChange }) => {
   return (

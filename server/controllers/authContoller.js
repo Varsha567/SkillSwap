@@ -20,18 +20,22 @@ exports.signup = async (req, res) => {
     const newUser = await User.create({
       username,
       email,
-      password: hashedPassword
+      password: hashedPassword,
+      profileComplete: false // Ensure this is explicitly set for new users
     });
 
     // Generate token
     const token = jwt.sign(
       { id: newUser._id },
-      process.env.JWT_SECRET || 'your-secret-key',
+      process.env.JWT_SECRET || 'your-secret-key', // Use a strong secret in production!
       { expiresIn: '1h' }
     );
 
-    res.status(201).json({ token, userId: newUser._id });
+    // FIX HERE: Changed 'user.profileComplete' to 'newUser.profileComplete'
+    res.status(201).json({ token, userId: newUser._id, profileComplete: newUser.profileComplete });
   } catch (err) {
+    // IMPORTANT: Log the actual error to your backend console for debugging
+    console.error('Signup error (backend):', err);
     res.status(500).json({ message: 'Something went wrong' });
   }
 };
@@ -50,13 +54,15 @@ exports.login = async (req, res) => {
     // Check password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      // You might want to make this error message more generic to prevent enumeration attacks
+      // e.g., 'Invalid credentials' for both user not found and password mismatch.
+      return res.status(400).json({ message: 'Invalid credentials' }); 
     }
 
     // Generate token
     const token = jwt.sign(
       { id: user._id },
-      process.env.JWT_SECRET || 'your-secret-key',
+      process.env.JWT_SECRET || 'your-secret-key', // Use a strong secret in production!
       { expiresIn: '1h' }
     );
 
@@ -66,6 +72,8 @@ exports.login = async (req, res) => {
       profileComplete: user.profileComplete 
     });
   } catch (err) {
+    // IMPORTANT: Log the actual error to your backend console for debugging
+    console.error('Login error (backend):', err);
     res.status(500).json({ message: 'Something went wrong' });
   }
 };

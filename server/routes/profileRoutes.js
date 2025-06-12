@@ -17,7 +17,7 @@ router.get('/me', auth, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
+router.get('/:userId', profileController.getUserProfileById);
 
 
 module.exports = router;
