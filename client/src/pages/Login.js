@@ -1,88 +1,108 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import AuthForm from '../components/AuthForm'; // Reusable form
-
-const Login = ({ onAuthSuccess }) => {
+import { useAuth } from '../context/AuthContext';
+import '../css/Login.css'; // Assuming your login styles are here
+import google_logo from '../assets/google-logo.png';  
+const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
-  // State to hold potential error messages from the backend
-  const [errorMessage, setErrorMessage] = useState('');
+  const { login } = useAuth(); // Get login function from AuthContext
 
-  // IMPORTANT FIX: This handleChange function now correctly accepts 'name' and 'value'
-  // as passed by your AuthForm component, instead of expecting an event object 'e'.
-  const handleChange = (name, value) => {
-    setFormData({ ...formData, [name]: value });
-    // Clear any previous error message when user starts typing again
-    setErrorMessage('');
-  };
-
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setErrorMessage(''); // Clear error message on new submission
+    setError('');
+    setLoading(true);
 
     try {
-      // Ensure the port number is correct, as specified (5000)
       const response = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
+      const data = await response.json(); // Backend should send userId, username, email, profileComplete
 
       if (response.ok) {
-        // Log the successful response data for debugging
-        console.log('Login successful:', data);
+        console.log('Login successful (raw backend response):', data);
 
-        // Store the userId along with the token and profileComplete status
-        // This userId is crucial for fetching the correct profile later
-        localStorage.setItem('userId', data.userId);
-        
-        // Call the prop function to update App.js state and localStorage
-        onAuthSuccess(data.token, data.profileComplete);
+        // Construct a complete user object from backend response
+        const userDataForContext = {
+            _id: data.userId, // Use _id for consistency with MongoDB IDs
+            id: data.userId, // Keep 'id' for flexibility if other parts use it
+            username: data.username,
+            email: data.email,
+            profileComplete: data.profileComplete,
+        };
 
-        if (data.profileComplete) {
-          // If profile is complete, navigate to the dashboard
-          navigate('/dashboard'); 
+        console.log('Login successful (userData passed to AuthContext):', userDataForContext);
+        login(data.token, userDataForContext); 
+
+        // Navigate based on profileComplete status
+        if (userDataForContext.profileComplete === false) {
+          navigate('/complete-profile', { replace: true });
         } else {
-          // If profile is NOT complete, navigate to the profile completion page
-          navigate('/complete-profile');
+          navigate('/dashboard', { replace: true }); 
         }
+
       } else {
-        // If response is not OK (e.g., 401, 400), display the error message from the backend
-        console.error('Login failed (backend response):', data.message || 'Unknown error');
-        setErrorMessage(data.message || 'Login failed. Please check your credentials.');
+        setError(data.message || 'Login failed. Please check your credentials.');
       }
     } catch (err) {
-      // Catch network errors or issues with JSON parsing
-      console.error('Login error (frontend/network):', err);
-      setErrorMessage('An error occurred during login. Please try again later.');
+      console.error('Network error during login:', err);
+      setError('Network error. Please try again later.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login to SkillSwap</h2>
-        
-        {errorMessage && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <span className="block sm:inline">{errorMessage}</span>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2>Login to SkillSwap</h2>
+        <form onSubmit={handleLogin} className="auth-form">
+          {error && <p className="error-message">{error}</p>}
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="auth-input"
+            />
           </div>
-        )}
-
-        <AuthForm
-          isLogin={true}
-          formData={formData}
-          handleChange={handleChange} // Pass the corrected handleChange
-          onSubmit={handleSubmit}
-        />
-        <p className="mt-4 text-center">
-          Don't have an account? <Link to="/signup" className="text-blue-600 hover:underline">Sign Up</Link>
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="auth-input"
+            />
+          </div>
+          <button type="submit" className="auth-button" disabled={loading}>
+            {loading ? 'Logging In...' : 'Login'}
+          </button>
+        </form>
+        <p className="auth-switch-link">
+          Don't have an account? <Link to="/signup">Sign Up</Link>
         </p>
+      </div>
+      {/* Social login section */}
+      <div className="social-login-section">
+        <p>OR</p>
+        <button className="google-signin-button" onClick={() => window.location.href = 'http://localhost:5000/api/auth/google'}>
+          <img src={google_logo} alt="Google icon" className="google-icon" /> {/* Using a placeholder Google icon */}
+          Continue with Google
+        </button>
       </div>
     </div>
   );

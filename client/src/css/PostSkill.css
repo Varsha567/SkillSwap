@@ -1,0 +1,198 @@
+/* Import Google Font - Inter for consistency */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* Color Palette Variables (Ensure these are globally accessible, e.g., in App.css or a dedicated palette file) */
+:root {
+    --primary-bg: #1A1A2E; /* Deep Night Blue */
+    --secondary-bg: #1F4068; /* Dark Teal Blue (for cards, header, etc.) */
+    --primary-text: #E0E0E0; /* Off-White / Light Grey */
+    --accent-primary: #F3B05C; /* Warm Sunset Orange (Primary CTA/Accent) */
+    --accent-secondary: #FF7B54; /* Lively Coral Orange (Secondary CTA/Hover) */
+    --subtle-border: #507DBC; /* Muted Steel Blue (for borders, subtle lines) */
+    --shadow-dark: rgba(0, 0, 0, 0.6); /* Slightly darker shadow for better contrast */
+    --error-red: #ef4444; /* Standard error red */
+    --success-green: #22c55e; /* Standard success green */
+}
+
+/* Base styling for the entire page to ensure consistent background */
+body {
+    background-color: var(--primary-bg); /* Ensure body has the primary background */
+    color: var(--primary-text);
+    font-family: 'Inter', sans-serif;
+}
+
+/* Page container (main wrapper for the Post Skill content) */
+.post-skill-page-container {
+    background-color: var(--primary-bg); /* Ensures consistent background */
+    min-height: calc(100vh - 4rem); /* Adjust based on header/footer height */
+    padding: 3rem 1rem; /* Generous padding for spacing */
+    display: flex;
+    justify-content: center; /* Center content horizontally */
+    align-items: flex-start; /* Align content to the top vertically */
+    box-sizing: border-box; /* Include padding in element's total width and height */
+    width: 100%; /* Ensure it takes full width */
+}
+
+/* Form card styling */
+.post-skill-card {
+    background-color: var(--secondary-bg); /* Dark Teal Blue background for the form card */
+    padding: 2.5rem; /* Internal padding */
+    border-radius: 1rem; /* Rounded corners */
+    box-shadow: 0 8px 20px var(--shadow-dark); /* Prominent shadow */
+    max-width: 600px; /* Max width for readability */
+    width: 90%; /* Responsive width */
+    border: 1px solid rgba(255, 255, 255, 0.15); /* Subtle border */
+    box-sizing: border-box; /* Include padding in element's total width and height */
+    overflow: hidden; /* Prevent content from overflowing the card */
+}
+
+.post-skill-title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--primary-text);
+}
+
+/* Messages (error/success alerts) */
+.error-message,
+.success-message {
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.error-message {
+    background-color: rgba(239, 68, 68, 0.15); /* Light red with transparency */
+    color: var(--error-red);
+    border: 1px solid var(--error-red);
+}
+
+.success-message {
+    background-color: rgba(34, 197, 94, 0.15); /* Light green with transparency */
+    color: var(--success-green);
+    border: 1px solid var(--success-green);
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-label {
+    display: block;
+    color: var(--primary-text);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* Input, Textarea, Select Base Styles */
+.form-input,
+.form-textarea,
+.form-select {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    background-color: rgba(255, 255, 255, 0.08); /* Subtle transparency for background */
+    border: 1px solid var(--subtle-border); /* Use subtle border color */
+    border-radius: 0.5rem;
+    color: var(--primary-text);
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+    box-sizing: border-box; /* Crucial for consistent sizing */
+}
+
+/* Placeholder text color */
+.form-input::placeholder,
+.form-textarea::placeholder {
+    color: rgba(224, 224, 224, 0.6);
+}
+
+/* Focus states for form elements */
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+    border-color: var(--accent-secondary);
+    box-shadow: 0 0 0 3px rgba(255, 123, 84, 0.4);
+    background-color: rgba(255, 255, 255, 0.15); /* Slightly brighter on focus */
+}
+
+.form-textarea {
+    resize: vertical;
+}
+
+/* Specific styles for the select dropdown arrow */
+.form-select {
+    appearance: none; /* Remove default OS arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23E0E0E0%22%20d%3D%22M4.5%2C4.5L6%2C6l1.5%2C-1.5L8%2C5l-2%2C2l-2%2C-2L4.5%2C4.5z%22%2F%3E%3C%2Fsvg%3E'); /* Custom down arrow */
+    background-repeat: no-repeat;
+    background-position: right 0.7rem center;
+    background-size: 0.8em;
+    padding-right: 2.5rem; /* Space for the custom arrow */
+}
+
+/* Style for select options (dropdown menu items) */
+.form-select option {
+    background-color: var(--primary-bg); /* Dark background for options */
+    color: var(--primary-text);
+}
+
+
+/* Submit button */
+.submit-button {
+    background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+    color: var(--primary-bg); /* Dark text on bright button */
+    border: none;
+    padding: 0.8rem 2.5rem;
+    border-radius: 9999px; /* Pill shape */
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(243, 176, 92, 0.4);
+    transition: all 0.3s ease-in-out;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: block; /* Make it block level */
+    margin: 2rem auto 0; /* Center the button */
+}
+
+.submit-button:hover {
+    background: linear-gradient(45deg, var(--accent-secondary), var(--accent-primary));
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(255, 123, 84, 0.6);
+}
+
+.submit-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: var(--subtle-border);
+    box-shadow: none;
+    transform: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .post-skill-page-container {
+        padding: 1.5rem 0.5rem;
+    }
+    .post-skill-card {
+        padding: 1.5rem;
+        width: 95%;
+    }
+    .post-skill-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .form-label, .form-input, .form-textarea, .form-select, .submit-button {
+        font-size: 0.9rem;
+    }
+    .submit-button {
+        padding: 0.7rem 2rem;
+    }
+}

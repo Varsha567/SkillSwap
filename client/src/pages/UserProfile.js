@@ -1,175 +1,214 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom'; // Import useLocation
+import { useParams, useNavigate, Link } from 'react-router-dom'; // Import Link
+import { useAuth } from '../context/AuthContext';
+import '../css/UserProfile.css'; // Assume your UserProfile specific CSS
+import '../css/SkillCard.css'; // For individual skill card styling if not in UserProfile.css
 
 const UserProfile = () => {
-  // useParams() will capture userId from /profile/:userId route
-  const { userId: paramUserId } = useParams(); 
+  const { userId: paramUserId } = useParams(); // Get userId from URL params (e.g., from /profile/:userId)
   const navigate = useNavigate();
-  const location = useLocation(); // Get current location object
-  
+  const { user: authUser, loading: authLoading } = useAuth(); // Get logged-in user and auth loading status
+
   const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [userPosts, setUserPosts] = useState([]); // State to store user's skill posts
+  const [loadingProfile, setLoadingProfile] = useState(true); // Loading state for profile data
+  const [loadingPosts, setLoadingPosts] = useState(true);   // Loading state for posts data
+  const [profileError, setProfileError] = useState('');     // Error for profile fetch
+  const [postsError, setPostsError] = useState('');         // Error for posts fetch
+  const [copySuccess, setCopySuccess] = useState('');       // State for copy success message
 
+  // Determine if the currently viewed profile belongs to the logged-in user
+  // This uses paramUserId for /profile/:userId and authUser._id for /my-profile
+  const isCurrentUserProfile = authUser && (paramUserId === authUser._id || window.location.pathname === '/my-profile');
+
+  // --- Effect to fetch User Profile Data ---
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      setLoading(true);
-      setError(null);
+    const fetchProfileAndPosts = async () => {
+      setLoadingProfile(true);
+      setProfileError('');
+      setLoadingPosts(true);
+      setPostsError('');
+
+      const idToFetch = paramUserId || authUser?._id; // Prioritize paramId, fallback to authUser for /my-profile
+
+      if (!idToFetch && !authLoading) { // If no ID and auth is done loading, redirect if it's /my-profile
+          setProfileError('No user ID found for profile display. Please log in or provide a valid profile ID.');
+          if (window.location.pathname === '/my-profile' && !authUser) { // Only redirect if specifically /my-profile and not logged in
+              navigate('/login', { replace: true });
+          }
+          setLoadingProfile(false);
+          setLoadingPosts(false);
+          return;
+      }
+      
+      // If auth is still loading, or no ID resolved, wait.
+      if (authLoading || !idToFetch) {
+          return;
+      }
+
       const token = localStorage.getItem('token');
-      const currentAuthUserId = localStorage.getItem('userId'); // The ID of the currently logged-in user
-
-      // Determine the ID to fetch:
-      // If we are on '/my-profile', use the currentAuthUserId.
-      // If we are on '/profile/:userId', use the paramUserId.
-      const idToFetch = location.pathname === '/my-profile' ? currentAuthUserId : paramUserId;
-
-      // If no ID can be determined (e.g., not logged in and no paramId), redirect or show error
-      if (!idToFetch) {
-        setError('No user ID found for profile display. Please log in or provide a valid profile ID.');
-        setLoading(false);
-        // Optionally redirect to login if no ID is available for /my-profile
-        if (location.pathname === '/my-profile') {
-            navigate('/login', { replace: true });
-        }
-        return; // Stop execution
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
       }
-
-      let url;
-      // Use the /me endpoint if fetching the current authenticated user's profile
-      if (token && idToFetch === currentAuthUserId && location.pathname === '/my-profile') {
-        url = 'http://localhost:5000/api/profile/me'; 
-      } else {
-        // Otherwise, use the public /:userId endpoint
-        url = `http://localhost:5000/api/profile/${idToFetch}`;
-      }
-
-      console.log('Fetching profile from URL:', url); // For debugging
-      console.log('ID being fetched:', idToFetch); // For debugging
 
       try {
-        const headers = { 'Content-Type': 'application/json' };
-        // Only send Authorization header if a token exists and it's needed for the endpoint
-        // The /me endpoint specifically requires a token. Public profiles might not.
-        if (token && (url.endsWith('/me') || (location.pathname.startsWith('/profile/') && idToFetch === currentAuthUserId))) {
-          headers['Authorization'] = `Bearer ${token}`;
-        }
+        // Fetch User Profile
+        const profileUrl = isCurrentUserProfile ? 'http://localhost:5000/api/profile/me' : `http://localhost:5000/api/profile/${idToFetch}`;
+        const profileResponse = await fetch(profileUrl, { headers });
+        const profileData = await profileResponse.json();
 
-        const response = await fetch(url, { headers });
-        const data = await response.json();
-
-        if (response.ok) {
-          setProfile(data);
-          console.log('Profile data fetched successfully:', data); // For debugging
+        if (profileResponse.ok) {
+          setProfile(profileData);
         } else {
-          setError(data.message || 'Failed to fetch profile');
-          console.error('Failed to fetch profile (backend response):', data); // For debugging
-          // Handle specific errors like 404 for profile not found
-          if (response.status === 404) {
-              setProfile(null); // Explicitly set profile to null if not found
+          setProfileError(profileData.message || 'Failed to fetch profile');
+          if (profileResponse.status === 404) {
+            setProfile(null);
           }
         }
       } catch (err) {
-        console.error('Error fetching profile (frontend/network issue):', err); // More specific console error
-        setError('An error occurred while fetching profile data. Please check your network and backend.');
+        console.error('Error fetching profile (frontend/network issue):', err);
+        setProfileError('An error occurred while fetching profile data. Please check your network and backend.');
       } finally {
-        setLoading(false);
+        setLoadingProfile(false);
+      }
+
+      // Fetch User Posts
+      try {
+        const postsResponse = await fetch(`http://localhost:5000/api/skills/user/${idToFetch}`, { headers });
+        const postsData = await postsResponse.json();
+
+        if (postsResponse.ok && postsData.listings) {
+          setUserPosts(postsData.listings);
+        } else {
+          setPostsError(postsData.message || `Failed to fetch user's skills. Status: ${postsResponse.status}`);
+          console.error('UserProfile: Failed to fetch user posts:', postsResponse.status, postsData);
+        }
+      } catch (err) {
+        console.error('UserProfile: Error fetching user posts:', err);
+        setPostsError('An error occurred while loading user posts.');
+      } finally {
+        setLoadingPosts(false);
       }
     };
 
-    // Re-fetch when the path changes or the paramUserId changes
-    // FIX: Removed 'currentAuthUserId' from dependency array
-    fetchUserProfile();
-  }, [paramUserId, location.pathname, navigate]); // Dependencies adjusted
+    fetchProfileAndPosts();
+  }, [paramUserId, authUser, authLoading, navigate, isCurrentUserProfile]); // Added isCurrentUserProfile to dependencies for profile URL logic
 
-  if (loading) {
-    return <div className="text-center py-8">Loading profile...</div>;
+  // Function to copy discord handle to clipboard
+  const copyDiscordHandle = () => {
+    if (profile && profile.discordHandle) {
+      const el = document.createElement('textarea');
+      el.value = profile.discordHandle;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      setCopySuccess('Copied!');
+      setTimeout(() => setCopySuccess(''), 2000); // Clear message after 2 seconds
+    }
+  };
+
+  // --- Render Loading / Error States ---
+  if (loadingProfile || loadingPosts) { // Show loading until both profile and posts are fetched
+    return (
+      <div className="user-profile-page loading-state">
+        <div className="loading-message-box">
+          <p className="loading-text">Loading profile and listings...</p>
+        </div>
+      </div>
+    );
   }
 
-  if (error) {
-    return <div className="text-center py-8 text-red-600">{error}</div>;
+  if (profileError) {
+    return (
+      <div className="user-profile-page error-state">
+        <div className="error-message-box">
+          <p className="error-text">{profileError}</p>
+        </div>
+      </div>
+    );
   }
 
-  // This condition handles cases where no profile is found or ID is invalid
-  if (!profile) {
-    return <div className="text-center py-8">Profile not found or invalid ID.</div>;
+  if (!profile) { // If profile not found after loading
+    return <div className="user-profile-page error-state">
+        <div className="error-message-box">
+            <p className="error-text">Profile not found or invalid ID.</p>
+        </div>
+    </div>;
   }
 
-  // Determine if it's the current user's profile to conditionally show sensitive info/edit options
-  // This line (Line 80 in your original code) remains unchanged as it correctly accesses localStorage directly.
-  const isCurrentUserProfile = (localStorage.getItem('token') && profile._id === localStorage.getItem('userId'));
-
-
+  // --- Main Render for User Profile and Posts ---
   return (
-    <div className="container mx-auto p-8">
-      <div className="bg-white shadow-lg rounded-lg p-8">
-        <div className="flex items-center mb-6">
-          {/* You can add a profile picture here */}
-          <img
-            src="https://placehold.co/150x150/ADD8E6/000000?text=Profile" // More descriptive placeholder
-            alt="Profile Avatar"
-            className="w-24 h-24 rounded-full mr-6 border-2 border-blue-500"
-          />
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800">{profile.fullName || profile.username || 'User'}</h1>
-            {/* Only show email if it's their own profile */}
-            {isCurrentUserProfile && (
-              <p className="text-gray-600 text-lg">{profile.email}</p>
-            )}
-            {/* Optional: Add an edit profile button here if it's the current user's profile */}
-            {isCurrentUserProfile && (
-                <button
-                    onClick={() => navigate('/edit-profile')} // You'd create an /edit-profile route/page later
-                    className="mt-2 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1 px-3 rounded-full text-sm"
-                >
-                    Edit Profile
-                </button>
-            )}
+    <div className="user-profile-page">
+      <div className="profile-card"> {/* Renamed profile-header to profile-card for consistency */}
+        <h2 className="profile-name">
+          {profile.fullName || profile.username || 'User Profile'}
+          {isCurrentUserProfile && <span className="own-profile-indicator">(Your Profile)</span>}
+        </h2>
+        {/* Profile incomplete warning and link to complete profile */}
+        {isCurrentUserProfile && profile.profileComplete === false && (
+          <div className="profile-incomplete-warning">
+            Your profile is incomplete. <Link to="/complete-profile">Complete it now!</Link>
           </div>
-        </div>
+        )}
+        <p className="profile-bio">{profile.bio || 'No bio provided yet.'}</p>
+        
+        {profile.discordHandle && (
+          <p className="profile-detail discord-handle-display">
+            Discord: {profile.discordHandle} 
+            <button onClick={copyDiscordHandle} className="copy-button">
+              {copySuccess || 'Copy'}
+            </button>
+          </p>
+        )}
+        {profile.skillsOffered && profile.skillsOffered.length > 0 && (
+          <p className="profile-detail">Skills Offered: {profile.skillsOffered.join(', ')}</p>
+        )}
+        {profile.skillsNeeded && profile.skillsNeeded.length > 0 && (
+          <p className="profile-detail">Skills Needed: {profile.skillsNeeded.join(', ')}</p>
+        )}
+        
+        {/* Edit Profile button, ONLY shown for the current user's own profile */}
+        {isCurrentUserProfile && (
+          <button
+            onClick={() => navigate('/complete-profile')}
+            className="edit-profile-button"
+          >
+            Edit Profile
+          </button>
+        )}
+      </div>
 
-        <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-gray-700 mb-2">About Me</h2>
-          <p className="text-gray-800">{profile.bio || 'No bio provided yet.'}</p>
-        </div>
-
-        <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-gray-700 mb-2">Skills Offered</h2>
-          {profile.skillsOffered && profile.skillsOffered.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {profile.skillsOffered.map((skill, index) => (
-                <span key={index} className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
-                  {skill}
-                </span>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-600">No skills offered yet.</p>
-          )}
-        </div>
-
-        <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-gray-700 mb-2">Skills Needed</h2>
-          {profile.skillsNeeded && profile.skillsNeeded.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {profile.skillsNeeded.map((skill, index) => (
-                <span key={index} className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
-                  {skill}
-                </span>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-600">No skills needed yet.</p>
-          )}
-        </div>
-
-        {/* Placeholder for Skill Listings */}
-        <div className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-700 mb-4">Skill Listings by {profile.username || profile.fullName || 'this user'}</h2>
-          {/* You will fetch and render SkillListing components here later */}
-          <div className="bg-gray-50 p-4 rounded-md text-gray-600">
-            (Coming soon: Display skill offers and requests by this user)
+      {/* User's Posts Section (No "Coming soon" box) */}
+      <div className="user-posts-section">
+        <h3 className="section-title">Skill Listings by {profile.username || profile.fullName || 'this user'}</h3>
+        {postsError && (
+          <div className="error-message-text">{postsError}</div>
+        )}
+        {loadingPosts ? (
+          <p className="loading-message-text">Loading skill listings...</p>
+        ) : userPosts.length > 0 ? (
+          <div className="user-posts-grid">
+            {userPosts.map(post => (
+              <div key={post._id} className="user-post-card">
+                <h4>{post.title}</h4>
+                <p className="post-description">{post.description}</p>
+                <p className="post-category">Category: {post.category}</p>
+                <p className="post-level">Level: {post.skillLevel}</p>
+                <p className="post-swap-for">Seeking: {post.swapFor}</p>
+                <p className="post-status">Status: <span>{post.status}</span></p>
+                {/* No edit/delete buttons here as requested */}
+              </div>
+            ))}
           </div>
-        </div>
+        ) : (
+          <p className="no-data-message">
+            {isCurrentUserProfile 
+                ? <>You haven't posted any skills yet. <Link to="/postskill">Post your first skill!</Link></>
+                : 'This user has no public skill listings.'}
+          </p>
+        )}
       </div>
     </div>
   );

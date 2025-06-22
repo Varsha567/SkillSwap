@@ -1,72 +1,137 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import AuthForm from '../components/AuthForm';
-
-const Signup = ({ onAuthSuccess }) => {
+import { useAuth } from '../context/AuthContext';
+import '../css/Login.css'; // Assuming your signup styles are here
+import google_logo from '../assets/google-logo.png';  
+const Signup = () => {
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    username: '', // Add username field
-    email: '',
-    password: '',
-  });
-  const [errorMessage, setErrorMessage] = useState('');
+  const { login } = useAuth();
 
-  // IMPORTANT FIX: This handleChange function now correctly accepts 'name' and 'value'
-  // as passed by your AuthForm component.
-  const handleChange = (name, value) => {
-    setFormData({ ...formData, [name]: value });
-    setErrorMessage('');
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-    setErrorMessage(''); // Clear error message on new submission
+    setError('');
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+
+    setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/signup', {
+      const response = await fetch('http://localhost:5000/api/auth/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, email, password }),
       });
 
-      const data = await response.json();
+      const data = await response.json(); // Backend should send userId, username, email, profileComplete
 
       if (response.ok) {
-        console.log('Signup successful:', data);
-        localStorage.setItem('userId', data.userId); // Store userId on signup too
-        // New user's profile is *not* complete by default
-        onAuthSuccess(data.token, false); // Pass false for profileComplete
-        navigate('/complete-profile'); // Redirect to profile completion
+        console.log('Signup successful (raw backend response):', data);
+
+        // Construct a complete user object from backend response
+        const userDataForContext = {
+            _id: data.userId,
+            id: data.userId,
+            username: data.username,
+            email: data.email,
+            profileComplete: data.profileComplete,
+        };
+        console.log('Signup successful (userData passed to AuthContext):', userDataForContext);
+        login(data.token, userDataForContext); 
+        
+        // Navigate based on profileComplete status
+        if (userDataForContext.profileComplete === false) {
+          navigate('/complete-profile', { replace: true });
+        } else {
+          navigate('/dashboard', { replace: true }); 
+        }
+
       } else {
-        console.error('Signup failed (backend response):', data.message || 'Unknown error');
-        setErrorMessage(data.message || 'Signup failed. Please try again.');
+        setError(data.message || 'Signup failed. Please try again.');
       }
     } catch (err) {
-      console.error('Signup error (frontend/network):', err);
-      setErrorMessage('An error occurred during signup. Please try again later.');
+      console.error('Network error during signup:', err);
+      setError('Network error. Please try again later.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        <h2 className="text-2xl font-bold mb-6 text-center">Join SkillSwap</h2>
-        
-        {errorMessage && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <span className="block sm:inline">{errorMessage}</span>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2>Join SkillSwap</h2>
+        <form onSubmit={handleSignup} className="auth-form">
+          {error && <p className="error-message">{error}</p>}
+          <div className="form-group">
+            <label htmlFor="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              className="auth-input"
+            />
           </div>
-        )}
-
-        <AuthForm
-          isLogin={false}
-          formData={formData}
-          handleChange={handleChange} // Pass the corrected handleChange
-          onSubmit={handleSubmit}
-        />
-        <p className="mt-4 text-center">
-          Already have an account? <Link to="/login" className="text-blue-600 hover:underline">Login</Link>
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="auth-input"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="auth-input"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="confirmPassword">Confirm Password</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              className="auth-input"
+            />
+          </div>
+          <button type="submit" className="auth-button" disabled={loading}>
+            {loading ? 'Signing Up...' : 'Sign Up'}
+          </button>
+        </form>
+        <p className="auth-switch-link">
+          Already have an account? <Link to="/login">Login</Link>
         </p>
+      </div>
+      {/* Social login section */}
+      <div className="social-login-section">
+        <p>OR</p>
+        <button className="google-signin-button" onClick={() => window.location.href = 'http://localhost:5000/api/auth/google'}>
+          <img src={google_logo} alt="Google icon" className="google-icon" />
+          Continue with Google
+        </button>
       </div>
     </div>
   );

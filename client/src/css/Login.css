@@ -1,0 +1,31 @@
+.social-login-section {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+.social-login-section p {
+    color: var(--primary-text);
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+.google-signin-button {
+    background-color: #4285F4; 
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: background-color 0.2s ease;
+}
+.google-signin-button:hover {
+    background-color: #357ae8;
+}
+.google-icon {
+    width: 24px;
+    height: 24px;
+} 

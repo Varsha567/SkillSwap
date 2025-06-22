@@ -1,0 +1,418 @@
+/* Import Google Font - Inter for consistency */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* Color Palette Variables (from your global palette) */
+:root {
+    --primary-bg: #1A1A2E; /* Deep Night Blue */
+    --secondary-bg: #1F4068; /* Dark Teal Blue (for cards, header, etc.) */
+    --primary-text: #E0E0E0; /* Off-White / Light Grey */
+    --accent-primary: #F3B05C; /* Warm Sunset Orange (Primary CTA/Accent) */
+    --accent-secondary: #FF7B54; /* Lively Coral Orange (Secondary CTA/Hover) */
+    --subtle-border: #507DBC; /* Muted Steel Blue (for borders, subtle lines) */
+    --shadow-dark: rgba(0, 0, 0, 0.4);
+    --error-red: #ef4444; /* Standard error red */
+    --success-green: #22c55e; /* Standard success green */
+    --info-blue: #60A5FA; /* A lighter blue for info/secondary elements */
+}
+
+/* Page Container */
+.user-profile-page {
+    background-color: var(--primary-bg);
+    min-height: calc(100vh - 4rem); /* Adjust based on header/footer height */
+    padding: 3rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+    color: var(--primary-text);
+}
+
+/* Profile Card Styling */
+.profile-card {
+    background-color: var(--secondary-bg);
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 8px 20px var(--shadow-dark);
+    max-width: 800px;
+    width: 90%;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center; /* For overall card content alignment */
+}
+
+.profile-name {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--accent-primary);
+    margin-bottom: 1rem;
+    display: flex; /* Use flex to align name and indicator */
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+}
+
+.own-profile-indicator {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--primary-text);
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    white-space: nowrap; /* Prevent text from wrapping */
+}
+
+.profile-incomplete-warning {
+    background-color: rgba(255, 123, 84, 0.15); /* Light accent color with transparency */
+    color: var(--accent-secondary);
+    border: 1px solid var(--accent-secondary);
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.profile-incomplete-warning a {
+    color: var(--accent-primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.profile-incomplete-warning a:hover {
+    text-decoration: underline;
+}
+
+.profile-bio {
+    font-size: 1.1rem;
+    color: rgba(224, 224, 224, 0.9);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    text-align: left; /* Align bio text to the left within the card */
+}
+
+/* NEW: General Styling for Profile Detail Lines (Discord, Skills) */
+.profile-detail {
+    font-size: 1rem;
+    color: var(--primary-text);
+    margin-bottom: 0.75rem;
+    text-align: left; /* Align to left */
+    display: flex; /* For potential icon or button alignment */
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.profile-detail strong { /* Make labels bolder */
+    font-weight: 700;
+    color: var(--accent-primary); /* Highlight labels */
+}
+
+/* Specific styling for Discord handle display */
+.discord-handle-display {
+    background-color: rgba(94, 114, 228, 0.15); /* Discord-like subtle background */
+    border: 1px solid rgba(94, 114, 228, 0.5);
+    padding: 0.6rem 1rem;
+    border-radius: 0.75rem;
+    display: inline-flex; /* Allow it to wrap naturally */
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1rem; /* Space from bio */
+    margin-bottom: 1.5rem; /* Space before skills */
+    font-weight: 500;
+    color: var(--info-blue); /* A nice info blue */
+}
+
+.discord-handle-display .copy-button {
+    background-color: var(--info-blue);
+    color: var(--primary-bg);
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.discord-handle-display .copy-button:hover {
+    background-color: var(--accent-secondary);
+    transform: translateY(-1px);
+}
+
+.discord-handle-display .copy-button.copied {
+    background-color: var(--success-green); /* Indicate success when copied */
+}
+
+
+/* Edit Profile Button */
+.edit-profile-button {
+    background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+    color: var(--primary-bg);
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 9999px; /* Pill shape */
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(243, 176, 92, 0.4);
+    transition: all 0.3s ease-in-out;
+    margin-top: 1.5rem; /* Space from details above */
+}
+
+.edit-profile-button:hover {
+    background: linear-gradient(45deg, var(--accent-secondary), var(--accent-primary));
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 15px rgba(255, 123, 84, 0.6);
+}
+
+
+/* General Section Styling (About Me, Skills Offered, Skills Needed, Skill Listings) */
+.profile-section {
+    background-color: var(--secondary-bg);
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 8px 20px var(--shadow-dark);
+    max-width: 800px;
+    width: 90%;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: left; /* Align content inside sections to left */
+}
+
+.profile-section .section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-text);
+    text-align: center; /* Titles remain centered */
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15); /* Subtle separator */
+}
+
+.profile-section .section-content {
+    font-size: 1.1rem;
+    color: rgba(224, 224, 224, 0.9);
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+}
+
+.profile-section .no-data-message {
+    font-style: italic;
+    color: rgba(224, 224, 224, 0.6);
+    text-align: center;
+    display: block; /* Ensures message takes full width */
+    padding: 1rem;
+}
+
+/* Skill Tags Container */
+.tags-container {
+    display: flex;
+    flex-wrap: wrap; /* Allow tags to wrap */
+    gap: 0.75rem; /* Space between tags */
+    margin-top: 1rem;
+    justify-content: center; /* Center tags if there are few */
+}
+
+.skill-tag-offered,
+.skill-tag-needed {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    border-radius: 9999px; /* Pill shape */
+    font-size: 0.95rem;
+    font-weight: 600;
+    white-space: nowrap; /* Prevent tag text from wrapping */
+    transition: transform 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.skill-tag-offered {
+    background-color: rgba(243, 176, 92, 0.2); /* Subtle background from accent */
+    color: var(--accent-primary);
+    border: 1px solid var(--accent-primary);
+}
+
+.skill-tag-needed {
+    background-color: rgba(80, 125, 188, 0.2); /* Subtle background from subtle-border */
+    color: var(--subtle-border);
+    border: 1px solid var(--subtle-border);
+}
+
+.skill-tag-offered:hover,
+.skill-tag-needed:hover {
+    transform: translateY(-2px);
+}
+
+
+/* User Posts Section (from previous update, ensure it's still good) */
+.user-posts-section {
+    background-color: var(--secondary-bg);
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 8px 20px var(--shadow-dark);
+    max-width: 900px; /* Slightly wider for posts grid */
+    width: 90%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 2rem; /* Space from other profile sections */
+}
+
+.user-posts-section .section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-text);
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.user-posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    justify-content: center;
+}
+
+.user-post-card {
+    background-color: var(--primary-bg); /* Primary background for individual post cards */
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--primary-text);
+    text-align: left;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.user-post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+}
+
+.user-post-card h4 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    margin-bottom: 0.75rem;
+}
+
+.user-post-card .post-description {
+    font-size: 0.95rem;
+    color: rgba(224, 224, 224, 0.8);
+    margin-bottom: 1rem;
+    flex-grow: 1;
+}
+
+.user-post-card .post-category,
+.user-post-card .post-level,
+.user-post-card .post-swap-for {
+    font-size: 0.9rem;
+    color: rgba(224, 224, 224, 0.7);
+    margin-bottom: 0.5rem;
+}
+
+.user-post-card .post-status {
+    font-size: 0.95rem;
+    color: var(--primary-text);
+    margin-top: 1rem;
+    font-weight: 600;
+}
+
+
+/* Message states (loading, error, no data) */
+.loading-state, .error-state {
+    min-height: 100vh;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+}
+
+.loading-message-box, .error-message-box {
+    background-color: var(--secondary-bg);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px var(--shadow-dark);
+    text-align: center;
+    color: var(--primary-text);
+}
+
+.loading-text, .error-text {
+    font-size: 1.2rem;
+    font-style: italic;
+}
+
+.error-text {
+    color: var(--error-red);
+}
+
+.loading-message-text,
+.error-message-text,
+.no-data-message {
+    text-align: center;
+    font-size: 1.1rem;
+    color: rgba(224, 224, 224, 0.7);
+    padding: 1rem;
+}
+
+.error-message-text {
+    color: var(--error-red);
+}
+
+.no-data-message a {
+    color: var(--accent-secondary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.no-data-message a:hover {
+    text-decoration: underline;
+    color: var(--accent-primary);
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .profile-card, .profile-section, .user-posts-section {
+        padding: 1.5rem;
+        width: 95%;
+    }
+    .profile-name {
+        font-size: 2rem;
+    }
+    .own-profile-indicator {
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+    }
+    .profile-bio {
+        font-size: 1rem;
+    }
+    .profile-detail, .discord-handle-display {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.8rem; /* Adjust padding for smaller screens */
+    }
+    .discord-handle-display .copy-button {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
+    }
+    .profile-section .section-title {
+        font-size: 1.5rem;
+    }
+    .user-posts-grid {
+        grid-template-columns: 1fr;
+    }
+    .user-post-card h4 {
+        font-size: 1.1rem;
+    }
+    .user-post-card .post-description,
+    .user-post-card .post-category,
+    .user-post-card .post-level,
+    .user-post-card .post-swap-for,
+    .user-post-card .post-status {
+        font-size: 0.85rem;
+    }
+    .skill-tag-offered,
+    .skill-tag-needed {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+}

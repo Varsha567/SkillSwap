@@ -1,0 +1,358 @@
+/* Import Google Font - Inter for consistency */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* Color Palette Variables (from your global palette) */
+:root {
+    --primary-bg: #1A1A2E; /* Deep Night Blue */
+    --secondary-bg: #1F4068; /* Dark Teal Blue (for cards, header, etc.) */
+    --primary-text: #E0E0E0; /* Off-White / Light Grey */
+    --accent-primary: #F3B05C; /* Warm Sunset Orange (Primary CTA/Accent) */
+    --accent-secondary: #FF7B54; /* Lively Coral Orange (Secondary CTA/Hover) */
+    --subtle-border: #507DBC; /* Muted Steel Blue (for borders, subtle lines) */
+    --shadow-dark: rgba(0, 0, 0, 0.4);
+    --shadow-light: rgba(255, 255, 255, 0.08); /* Light shadow on dark bg */
+    --error-red: #ef4444; /* Standard error red */
+    --success-green: #22c55e; /* Standard success green */
+}
+
+/* Base page styles */
+.complete-profile-page {
+    background-color: var(--primary-bg); /* Deep Night Blue */
+    min-height: calc(100vh - 4rem); /* Adjust based on header/footer height */
+    padding: 3rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+}
+
+.complete-profile-form-container {
+    background-color: var(--secondary-bg); /* Dark Teal Blue */
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 8px 20px var(--shadow-dark);
+    max-width: 600px;
+    width: 90%;
+    margin-bottom: 2rem; /* Space before posts section */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.form-title {
+    color: var(--primary-text);
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* Messages */
+.error-message {
+    background-color: rgba(239, 68, 68, 0.15); /* Light red with transparency */
+    color: var(--error-red);
+    border: 1px solid var(--error-red);
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+.success-message {
+    background-color: rgba(34, 197, 94, 0.15); /* Light green with transparency */
+    color: var(--success-green);
+    border: 1px solid var(--success-green);
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+/* Form Groups and Inputs */
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-label {
+    display: block;
+    color: var(--primary-text);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.form-input,
+.form-textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    background-color: rgba(255, 255, 255, 0.08); /* Subtle transparency */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+    color: var(--primary-text);
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+    color: rgba(224, 224, 224, 0.6);
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    border-color: var(--accent-secondary);
+    box-shadow: 0 0 0 3px rgba(255, 123, 84, 0.4);
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.form-textarea {
+    resize: vertical;
+}
+
+.form-help-text {
+    font-size: 0.85rem;
+    color: rgba(224, 224, 224, 0.7);
+    margin-top: 0.25rem;
+    line-height: 1.4;
+}
+
+.form-actions {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.submit-button {
+    background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+    color: var(--primary-bg);
+    border: none;
+    padding: 0.8rem 2.5rem;
+    border-radius: 9999px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(243, 176, 92, 0.4);
+    transition: all 0.3s ease-in-out;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.submit-button:hover {
+    background: linear-gradient(45deg, var(--accent-secondary), var(--accent-primary));
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(255, 123, 84, 0.6);
+}
+
+.submit-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: var(--subtle-border);
+    box-shadow: none;
+    transform: none;
+}
+
+/* Loading state for the entire page */
+.complete-profile-page.loading-state {
+    min-height: 100vh;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+}
+
+.loading-message-box {
+    background-color: var(--secondary-bg);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px var(--shadow-dark);
+    text-align: center;
+    color: var(--primary-text);
+}
+
+.loading-text {
+    font-size: 1.2rem;
+    font-style: italic;
+}
+
+
+/* --- User Posts Section Styling --- */
+.user-posts-section {
+    background-color: var(--secondary-bg);
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 8px 20px var(--shadow-dark);
+    max-width: 900px; /* Wider for skill cards */
+    width: 90%;
+    margin-top: 2rem; /* Space from profile form */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-posts-section .section-title { /* Reuse section-title from general styles */
+    margin-bottom: 2rem;
+    font-size: 2rem; /* Slightly smaller for internal section */
+    text-align: center;
+}
+
+.user-posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    justify-content: center; /* Center cards in grid */
+}
+
+.user-post-card {
+    background-color: var(--primary-bg); /* Primary background for individual post cards */
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--primary-text);
+    text-align: left;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Push actions to bottom */
+}
+
+.user-post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+}
+
+.user-post-card h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    margin-bottom: 0.75rem;
+}
+
+.user-post-card .post-description {
+    font-size: 0.95rem;
+    color: rgba(224, 224, 224, 0.8);
+    margin-bottom: 1rem;
+    flex-grow: 1; /* Allows description to take up available space */
+}
+
+.user-post-card .post-category {
+    font-size: 0.9rem;
+    color: rgba(224, 224, 224, 0.7);
+    margin-bottom: 0.5rem;
+}
+
+.user-post-card .post-status {
+    font-size: 0.95rem;
+    color: var(--primary-text);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-select {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--primary-text);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.3rem;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.status-select:hover,
+.status-select:focus {
+    border-color: var(--accent-secondary);
+}
+
+/* Style for select options (might need browser-specific styling for full control) */
+.status-select option {
+    background-color: var(--primary-bg); /* Dark background for options */
+    color: var(--primary-text);
+}
+
+
+.post-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem; /* Space from content above */
+    justify-content: flex-end; /* Align buttons to the right */
+}
+
+.delete-button {
+    background-color: #dc2626; /* A warning red */
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.delete-button:hover {
+    background-color: #b91c1c; /* Darker red on hover */
+    transform: translateY(-1px);
+}
+
+/* For generic messages within the posts section */
+.loading-message-text,
+.error-message-text {
+    text-align: center;
+    font-size: 1.1rem;
+    color: rgba(224, 224, 224, 0.7);
+    padding: 1rem;
+}
+
+.error-message-text {
+    color: var(--error-red);
+}
+
+.no-data-message a { /* For "Post your first skill!" link */
+    color: var(--accent-secondary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.no-data-message a:hover {
+    text-decoration: underline;
+    color: var(--accent-primary);
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .complete-profile-page,
+    .complete-profile-form-container,
+    .user-posts-section {
+        padding: 1.5rem;
+        width: 95%; /* Adjust width for small screens */
+    }
+    .form-title {
+        font-size: 1.5rem;
+    }
+    .form-label, .form-input, .form-textarea, .form-help-text, .submit-button {
+        font-size: 0.9rem;
+    }
+    .submit-button {
+        padding: 0.7rem 2rem;
+    }
+    .user-posts-section .section-title {
+        font-size: 1.5rem;
+    }
+    .user-posts-grid {
+        grid-template-columns: 1fr; /* Single column on small screens */
+    }
+    .user-post-card h3 {
+        font-size: 1.2rem;
+    }
+    .user-post-card .post-description,
+    .user-post-card .post-category,
+    .user-post-card .post-status {
+        font-size: 0.85rem;
+    }
+    .status-select, .delete-button {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+}

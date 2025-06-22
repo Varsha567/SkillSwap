@@ -1,231 +1,512 @@
-/* Color Palette */
+/* Import Google Font - Inter for consistency */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* Color Palette Variables (Updated to your new orange theme) */
 :root {
-  --dark-bg: #141416;
-  --text-light: #FFFFFF;
-  --card-bg: #533F4D;
-  --primary-btn: #A3492F;
-  --hover-state: #EE7C53;
-  --secondary-border: #FFFFFF;
-  --tag-border: #A3492F;
+    --primary-bg: #1A1A2E; /* Deep Night Blue */
+    --secondary-bg: #1F4068; /* Dark Teal Blue (for cards, header, etc.) */
+    --primary-text: #E0E0E0; /* Off-White / Light Grey */
+    --accent-primary: #F3B05C; /* Warm Sunset Orange (Primary CTA/Accent) */
+    --accent-secondary: #FF7B54; /* Lively Coral Orange (Secondary CTA/Hover) */
+    --subtle-border: #507DBC; /* Muted Steel Blue (for borders, subtle lines) */
+    --shadow-dark: rgba(0, 0, 0, 0.4);
+    --shadow-light: rgba(255, 255, 255, 0.08); /* Light shadow on dark bg */
 }
 
-/* Reset */
+/* Reset and Base Styles */
 body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: var(--dark-bg);
-  color: var(--text-light);
+    margin: 0;
+    font-family: 'Inter', sans-serif; /* Using Inter for a professional look */
+    background-color: var(--primary-bg);
+    color: var(--primary-text);
+    line-height: 1.6; /* Improved readability */
 }
 
 /* Header */
 .dashboard-header {
-  background: var(--dark-bg);
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    background: var(--secondary-bg); /* Dark Teal Blue for header background */
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 15px var(--shadow-dark); /* Deeper shadow for header */
+    position: sticky; /* Make header sticky */
+    top: 0;
+    z-index: 1000; /* Ensure header is on top */
+    border-bottom: 1px solid var(--subtle-border);
 }
 
 .logo {
-  height: 80px;
+    width: 65px; /* Adjusted size for better integration */
+    height: 65px; /* Adjusted size */
+    border-radius: 50%;
+    object-fit: cover;
+    padding: 2px;
+    background-color: var(--primary-bg); /* Primary Background as inner circle background */
+    border: 3px solid var(--accent-primary); /* Primary Accent border, slightly thicker */
+    box-shadow: 0 0 10px var(--accent-primary); /* Soft glow from Primary Accent */
+    transition: all 0.3s ease-in-out;
+}
+
+.logo:hover {
+    transform: scale(1.08); /* More pronounced enlarge on hover */
+    box-shadow: 0 0 20px var(--accent-secondary); /* More intense glow on hover from Secondary Accent */
 }
 
 .header-nav {
-  display: flex;
-  gap: 2rem;
+    display: flex;
+    gap: 2.5rem; /* Increased gap for better spacing */
 }
 
 .nav-link {
-  color: var(--text-light);
-  text-decoration: none;
-  font-weight: 500;
+    color: var(--primary-text);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.05rem; /* Slightly larger font */
+    transition: color 0.3s ease, transform 0.2s ease;
+    position: relative; /* For underline effect */
+}
+
+.nav-link::after { /* Animated underline */
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -5px;
+    left: 0;
+    background-color: var(--accent-secondary);
+    transition: width 0.3s ease-out;
+}
+
+.nav-link:hover {
+    color: var(--accent-secondary); /* Lively Coral Orange on hover */
+    transform: translateY(-2px); /* Slight lift on hover */
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem; /* Space between login/signup buttons */
 }
 
 /* Buttons */
 .btn-primary {
-  background: var(--primary-btn);
-  color: white;
-  border: none;
-  padding: 0.5rem 1.5rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.3s ease;
+    background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary)); /* Orange Gradient */
+    color: var(--primary-bg); /* Text on button - Primary Background for contrast */
+    border: none;
+    padding: 0.8rem 2rem; /* Increased padding */
+    border-radius: 9999px; /* Pill shape */
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1.05rem;
+    box-shadow: 0 5px 15px rgba(243, 176, 92, 0.4); /* Shadow from primary accent */
+    transition: all 0.3s ease-in-out;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .btn-primary:hover {
-  background: var(--hover-state);
+    background: linear-gradient(45deg, var(--accent-secondary), var(--accent-primary)); /* Invert gradient on hover */
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(255, 123, 84, 0.6);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(243, 176, 92, 0.3);
 }
 
 .btn-secondary {
-  background: transparent;
-  color: white;
-  border: 1px solid var(--secondary-border);
-  padding: 0.5rem 1.5rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: border 0.3s ease;
-  margin-left: 1rem;
+    background: transparent;
+    color: var(--accent-secondary); /* Lively Coral Orange text */
+    border: 2px solid var(--accent-primary); /* Warm Sunset Orange border */
+    padding: 0.8rem 2rem;
+    border-radius: 9999px; /* Pill shape */
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1.05rem;
+    transition: all 0.3s ease-in-out;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-left: 1rem;
 }
 
 .btn-secondary:hover {
-  border-color: var(--hover-state);
+    background-color: var(--accent-primary); /* Primary Accent background on hover */
+    color: var(--primary-bg); /* Primary Background text on hover */
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 5px 15px rgba(243, 176, 92, 0.4);
+}
+
+.btn-secondary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(243, 176, 92, 0.3);
 }
 
 /* Hero Section */
 .hero-section {
-  background: linear-gradient(135deg, var(--card-bg), var(--dark-bg));
-  padding: 3rem 1rem;
-  text-align: center;
-  border-radius: 8px;
-  margin-bottom: 2rem;
+    background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 100%); /* Blue gradient */
+    padding: 6rem 2rem; /* More vertical padding */
+    text-align: center;
+    border-radius: 0; /* No border-radius for full-width sections */
+    margin-bottom: 0; /* Remove margin-bottom */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh; /* Make hero section taller */
+    box-shadow: inset 0 -10px 20px rgba(0, 0, 0, 0.2); /* Inner shadow for depth */
+}
+
+.hero-content {
+    max-width: 900px;
 }
 
 .hero-content h1 {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
+    font-size: 4.5rem; /* Larger, more impactful */
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    color: var(--primary-text);
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5); /* Stronger text shadow */
 }
 
 .hero-subtext {
-  font-size: 1.1rem;
-  margin-bottom: 1.5rem;
+    font-size: 1.5rem; /* Larger subtext */
+    color: rgba(224, 224, 224, 0.85); /* Slightly muted primary text */
+    margin-bottom: 3rem;
+    line-height: 1.5;
 }
 
-/* Search Bar */
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+/* Search Bar (Updated for Browse page) */
 .search-bar {
-  display: flex;
-  max-width: 600px;
-  margin: 1rem auto 0 auto;
-  border-radius: 4px;
-  overflow: hidden;
+    display: flex;
+    max-width: 600px;
+    margin: 2rem auto; /* Adjusted margin */
+    border-radius: 9999px; /* Pill shape for search bar */
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--subtle-border);
 }
 
 .search-bar input {
-  flex: 1;
-  padding: 0.75rem;
-  border: none;
-  outline: none;
+    flex: 1;
+    padding: 0.9rem 1.5rem; /* Increased padding */
+    border: none;
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.08); /* Subtle white transparency */
+    color: var(--primary-text);
+    font-size: 1.1rem;
+}
+
+.search-bar input::placeholder {
+    color: rgba(224, 224, 224, 0.6); /* Muted placeholder text */
+}
+
+.search-bar input:focus {
+    background-color: rgba(255, 255, 255, 0.12);
+    border-color: var(--accent-secondary);
 }
 
 .search-bar button {
-  background: var(--primary-btn);
-  border: none;
-  color: white;
-  padding: 0.75rem 1.25rem;
-  cursor: pointer;
-  transition: background 0.3s;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); /* Gradient for search button */
+    border: none;
+    color: var(--primary-bg); /* Dark text on button */
+    padding: 0.9rem 1.75rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: -3px 0 10px rgba(0, 0, 0, 0.3); /* Shadow on left side of button */
 }
 
 .search-bar button:hover {
-  background: var(--hover-state);
+    background: linear-gradient(90deg, var(--accent-secondary), var(--accent-primary)); /* Inverted gradient on hover */
+    transform: translateX(2px);
 }
 
-/* Section Titles */
+/* Common Section Titles */
 section h2 {
-  font-size: 1.75rem;
-  margin-bottom: 1rem;
-  text-align: center;
+    font-size: 3rem; /* Larger section titles */
+    margin-bottom: 2.5rem;
+    color: var(--primary-text);
+    font-weight: 800;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
 }
 
-/* Steps (How It Works) */
+/* How It Works Section */
+.how-it-works-section {
+    background-color: var(--primary-bg); /* Primary Background */
+    padding: 4rem 2rem;
+}
+
 .steps-container {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-  padding: 1rem;
+    display: grid; /* Use grid for better control */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem; /* Increased gap */
+    margin-top: 3rem;
 }
 
 .step-card {
-  background: var(--card-bg);
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  text-align: center;
-  min-width: 150px;
+    background: var(--secondary-bg); /* Dark Teal Blue */
+    padding: 2rem;
+    border-radius: 1rem; /* More rounded corners */
+    text-align: center;
+    box-shadow: 0 6px 20px var(--shadow-dark); /* Deeper shadow */
+    border: 1px solid rgba(255, 255, 255, 0.15); /* Subtle border */
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
-/* Skills Grid */
+.step-card:hover {
+    transform: translateY(-10px); /* More pronounced lift */
+    box-shadow: 0 10px 30px var(--shadow-dark); /* Even deeper shadow on hover */
+}
+
+.step-card h3 {
+    font-size: 1.8rem; /* Larger step titles */
+    font-weight: 700;
+    color: var(--accent-secondary); /* Lively Coral Orange */
+    margin-bottom: 0.75rem;
+}
+
+/* Featured Skills Section */
+.featured-skills-section {
+    background-color: var(--secondary-bg); /* Dark Teal Blue */
+    padding: 4rem 2rem;
+    border-top: 1px solid var(--subtle-border);
+    border-bottom: 1px solid var(--subtle-border);
+}
+
 .skills-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
-  padding: 1rem 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Slightly larger cards */
+    gap: 2rem; /* Increased gap */
+    max-width: 1200px;
+    width: 100%;
+    margin: 3rem auto; /* Center grid and add space */
 }
 
+.no-skills-message {
+    font-size: 1.2rem;
+    color: rgba(224, 224, 224, 0.7);
+    text-align: center;
+    margin-top: 2rem;
+    width: 100%; /* Ensure it spans full width in grid context */
+    grid-column: 1 / -1; /* Make it span all columns in a grid */
+}
+
+.loading-message-text, .error-message-text {
+    font-size: 1.2rem;
+    color: rgba(224, 224, 224, 0.7);
+    text-align: center;
+    margin-top: 2rem;
+    grid-column: 1 / -1; /* Make it span all columns in a grid */
+}
+
+.error-message-text {
+    color: #ef4444; /* Standard red for errors */
+}
+
+.post-skill-link {
+    color: var(--accent-secondary); /* Lively Coral Orange */
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease-in-out, text-decoration 0.2s ease-in-out;
+}
+
+.post-skill-link:hover {
+    color: var(--accent-primary); /* Warm Sunset Orange on hover */
+    text-decoration: underline;
+}
+
+.view-all-button {
+    margin-top: 3rem; /* Space above the button */
+}
+
+/* Skill Card (from SkillCard.css, but relevant for Dashboard preview) */
 .skill-card {
-  background: var(--card-bg);
-  padding: 1.5rem;
-  border-radius: 8px;
-  color: white;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    background: var(--primary-bg); /* Primary Background for card body */
+    padding: 1.5rem;
+    border-radius: 1rem;
+    color: var(--primary-text);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-/* Testimonials */
-.testimonials {
-  padding: 2rem;
-  background: var(--card-bg);
-  border-radius: 8px;
-  margin: 2rem;
+.skill-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+/* Testimonials Section */
+.testimonials-section {
+    background-color: var(--primary-bg); /* Primary Background */
+    padding: 4rem 2rem;
 }
 
 .testimonial-carousel {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
 }
 
 .testimonial-card {
-  background: #3f2e39;
-  padding: 1rem;
-  border-left: 5px solid var(--primary-btn);
-  border-radius: 4px;
+    background: var(--secondary-bg); /* Dark Teal Blue */
+    padding: 2.5rem; /* Increased padding */
+    border-radius: 1rem;
+    box-shadow: 0 6px 20px var(--shadow-dark);
+    border-left: 5px solid var(--accent-primary); /* Primary Accent for border */
+    text-align: left;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-.quote {
-  font-style: italic;
+.testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px var(--shadow-dark);
 }
 
-.author {
-  margin-top: 0.5rem;
-  text-align: right;
-  font-size: 0.9rem;
-  color: #ddd;
+.testimonial-card .quote {
+    font-size: 1.25rem; /* Larger quote text */
+    font-style: italic;
+    color: rgba(224, 224, 224, 0.95);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
 }
 
-/* Tags / Filters */
-.skill-tag {
-  border: 1px solid var(--tag-border);
-  color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 3px;
-  font-size: 0.75rem;
-  display: inline-block;
-  margin-right: 0.5rem;
+.testimonial-card .author {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--accent-primary); /* Primary Accent for author */
+    text-align: right;
 }
 
-/* Footer */
+.no-testimonials-message {
+    font-size: 1.2rem;
+    color: rgba(224, 224, 224, 0.7);
+    text-align: center;
+    margin-top: 2rem;
+    width: 100%;
+}
+
+/* Tags / Filters (Generic for all tags, use specific classes for colors if needed) */
+.skill-tag { /* This class is general, use it for base tag styling */
+    background-color: rgba(var(--accent-primary), 0.2); /* Example: 20% transparent primary accent */
+    border: 1px solid var(--accent-primary);
+    color: var(--accent-primary);
+    padding: 0.4rem 0.8rem;
+    border-radius: 9999px; /* Pill shape */
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: inline-flex; /* Use flex to align content if needed */
+    align-items: center;
+    justify-content: center;
+    margin: 0.25rem; /* Small margin for spacing between tags */
+    white-space: nowrap; /* Prevent text wrapping inside tag */
+}
+
+/* Specific colors for offered/needed tags if used in other components */
+.skill-tag-offered { /* Use this if you have a separate class for offered skills */
+    background-color: rgba(243, 176, 92, 0.2); /* Example rgba of --accent-primary */
+    border: 1px solid var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+.skill-tag-needed { /* Use this if you have a separate class for needed skills */
+    background-color: rgba(255, 123, 84, 0.2); /* Example rgba of --accent-secondary */
+    border: 1px solid var(--accent-secondary);
+    color: var(--accent-secondary);
+}
+
+
+/* Footer (if placed in Layout) */
 .main-footer {
-  padding: 1rem;
-  text-align: center;
-  background: var(--dark-bg);
-  font-size: 0.9rem;
-  color: #ccc;
+    padding: 1.5rem; /* Increased padding */
+    text-align: center;
+    background: var(--secondary-bg); /* Dark Teal Blue for footer */
+    font-size: 0.95rem;
+    color: rgba(224, 224, 224, 0.7); /* Muted primary text */
+    border-top: 1px solid var(--subtle-border);
 }
 
-/* Responsive */
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+    .hero-content h1 {
+        font-size: 3.5rem;
+    }
+    .hero-subtext {
+        font-size: 1.3rem;
+    }
+    section h2 {
+        font-size: 2.5rem;
+    }
+    .skills-grid, .steps-container, .testimonial-carousel {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+}
+
 @media (max-width: 768px) {
-  .dashboard-header {
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .header-nav {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .steps-container {
-    flex-direction: column;
-    align-items: center;
-  }
+    .dashboard-header {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+        padding: 1rem 1rem;
+    }
+    .header-nav {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .hero-content h1 {
+        font-size: 2.8rem;
+    }
+    .hero-subtext {
+        font-size: 1.1rem;
+    }
+    .hero-buttons {
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+        max-width: 300px; /* Limit button width on small screens */
+    }
+    .btn-primary, .btn-secondary {
+        width: 100%;
+    }
+    section {
+        padding: 3rem 1rem;
+    }
+    section h2 {
+        font-size: 2rem;
+    }
+    .skills-grid, .steps-container, .testimonial-carousel {
+        grid-template-columns: 1fr; /* Single column layout on small screens */
+    }
+    .step-card, .skill-card, .testimonial-card {
+        margin: 0 auto; /* Center single column cards */
+        max-width: 400px; /* Max width for single column cards */
+    }
+    .search-bar {
+        flex-direction: column;
+        gap: 0.5rem;
+        border-radius: 1rem; /* Slightly less rounded on small screens */
+        padding: 0.75rem;
+    }
+    .search-bar input {
+        border-radius: 0.5rem; /* Match parent */
+        text-align: center;
+        width: 100%;
+    }
+    .search-bar button {
+        width: 100%;
+        border-radius: 0.5rem; /* Match parent */
+        margin-top: 0.5rem;
+        box-shadow: none; /* Remove side shadow on small screen */
+    }
 }

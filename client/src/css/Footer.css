@@ -1,0 +1,156 @@
+/* Import Google Font - Inter for consistency */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* Color Palette Variables (Ensure these are globally accessible, e.g., in App.css or a dedicated palette file) */
+:root {
+    --primary-bg: #1A1A2E; /* Deep Night Blue */
+    --secondary-bg: #1F4068; /* Dark Teal Blue (for cards, header, etc.) */
+    --primary-text: #E0E0E0; /* Off-White / Light Grey */
+    --accent-primary: #F3B05C; /* Warm Sunset Orange (Primary CTA/Accent) */
+    --accent-secondary: #FF7B54; /* Lively Coral Orange (Secondary CTA/Hover) */
+    --subtle-border: #507DBC; /* Muted Steel Blue (for borders, subtle lines) */
+    --shadow-dark: rgba(0, 0, 0, 0.4);
+}
+
+.footer {
+    background-color: var(--secondary-bg); /* Match header/card background */
+    color: var(--primary-text);
+    padding: 2.5rem 1.5rem;
+    font-family: 'Inter', sans-serif;
+    border-top: 1px solid rgba(255, 255, 255, 0.08); /* Subtle top border */
+    box-shadow: 0 -4px 10px var(--shadow-dark); /* Shadow at the top */
+    margin-top: 2rem; /* Provide some space above footer */
+    flex-shrink: 0; /* Ensures footer doesn't shrink when content is short */
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start; /* Align content to the top of its row */
+    gap: 2.5rem; /* Increased space between columns */
+}
+
+.footer-section {
+    flex: 1; /* Allow sections to grow */
+    min-width: 200px; /* Minimum width before wrapping */
+    text-align: left;
+    padding: 0 1rem; /* Added horizontal padding for sections */
+}
+
+.footer-section h4 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--accent-primary); /* Highlight section titles */
+    margin-bottom: 1rem;
+    position: relative; /* For underline effect */
+    padding-bottom: 0.5rem;
+}
+
+.footer-section h4::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 40px; /* Short underline */
+    height: 3px;
+    background-color: var(--accent-secondary);
+    border-radius: 2px;
+}
+
+.footer-section p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: rgba(224, 224, 224, 0.8);
+    margin-bottom: 0.75rem;
+}
+
+.footer-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-list li {
+    margin-bottom: 0.8rem; /* Increased vertical space between list items */
+}
+
+.footer-list a {
+    color: var(--primary-text);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: inline-block; /* For transform effect */
+}
+
+.footer-list a:hover {
+    color: var(--accent-secondary);
+    transform: translateX(8px); /* More noticeable slide effect on hover */
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 3.5rem; /* Increased margin for better separation */
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05); /* Very subtle separator */
+    font-size: 0.85rem;
+    color: rgba(224, 224, 224, 0.6);
+}
+
+.footer-bottom span {
+    color: var(--accent-primary); /* Highlight company name */
+    font-weight: 600;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .footer {
+        padding: 2rem 1rem;
+    }
+    .footer-container {
+        flex-direction: column;
+        align-items: center; /* Center sections vertically */
+        text-align: center;
+    }
+    .footer-section {
+        min-width: unset; /* Remove min-width restriction */
+        width: 100%; /* Full width for stacked sections */
+        margin-bottom: 1.5rem;
+        padding: 0; /* Remove horizontal padding on small screens as container handles it */
+    }
+    .footer-section h4 {
+        text-align: center; /* Center titles */
+    }
+    .footer-section h4::after {
+        left: 50%; /* Center underline */
+        transform: translateX(-50%);
+    }
+    .footer-list, .social-icons {
+        justify-content: center; /* Center lists and icons (if present) */
+    }
+    .footer-list {
+        display: block; /* Ensure list items stack */
+    }
+    .footer-list li {
+        margin-bottom: 0.5rem; /* Slightly less space when stacked */
+    }
+    .footer-bottom {
+        margin-top: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer-section h4 {
+        font-size: 1.1rem;
+    }
+    .footer-list a, .footer-section p {
+        font-size: 0.9rem;
+    }
+    .footer-bottom {
+        font-size: 0.8rem;
+    }
+}

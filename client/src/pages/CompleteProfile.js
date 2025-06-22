@@ -1,186 +1,446 @@
-import React, { useState, useEffect } from 'react'; // Import useEffect
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import '../css/CompleteProfile.css';
+import '../css/SkillCard.css';
 
-const CompleteProfile = ({ onProfileComplete }) => {
+const CompleteProfile = () => { 
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const { user, login } = useAuth();
+  
+  const [profileFormData, setProfileFormData] = useState({
     fullName: '',
     bio: '',
-    // FIX: Initialize skillsOffered and skillsNeeded as empty strings
-    // The input fields will directly control these string values.
-    skillsOffered: '', // Initialize as an empty string
-    skillsNeeded: '',  // Initialize as an empty string
+    skillsOffered: '',
+    skillsNeeded: '',
+    discordHandle: '',
   });
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [userPosts, setUserPosts] = useState([]);
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [postsLoading, setPostsLoading] = useState(true);
+  const [profileErrorMessage, setProfileErrorMessage] = useState('');
+  const [profileSuccessMessage, setProfileSuccessMessage] = useState('');
+  const [postsErrorMessage, setPostsErrorMessage] = useState('');
+  // New state to manage loading/disabling during status update
+  const [isEditingStatus, setIsEditingStatus] = useState({}); // Stores postId: true/false
 
-  // Optional: Fetch existing profile data if user revisits this page or partially filled
+  // --- Effect to fetch user profile ---
   useEffect(() => {
     const fetchExistingProfile = async () => {
+      setProfileLoading(true);
+      setProfileErrorMessage('');
       const token = localStorage.getItem('token');
-      if (!token) return;
+      if (!token) {
+        setProfileErrorMessage('Not authenticated. Please log in.');
+        setProfileLoading(false);
+        navigate('/login');
+        return;
+      }
 
       try {
         const response = await fetch('http://localhost:5000/api/profile/me', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+          headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
+
         if (response.ok && data) {
-          setFormData({
+          setProfileFormData({
             fullName: data.fullName || '',
             bio: data.bio || '',
-            // FIX: Convert fetched arrays to comma-separated strings for input fields
             skillsOffered: Array.isArray(data.skillsOffered) ? data.skillsOffered.join(', ') : '',
             skillsNeeded: Array.isArray(data.skillsNeeded) ? data.skillsNeeded.join(', ') : '',
+            discordHandle: data.discordHandle || '',
           });
+          setProfileSuccessMessage('Profile data loaded.');
+        } else {
+          const msg = data.message || `Failed to load existing profile data. Status: ${response.status}.`;
+          setProfileErrorMessage(msg);
+          console.error('CompleteProfile useEffect (Profile Fetch): Failed to fetch profile:', response.status, data);
         }
       } catch (err) {
-        console.error('Error fetching existing profile:', err);
-        // Do not block if profile fetch fails, user can still fill form
+        console.error('CompleteProfile useEffect (Profile Fetch): Error fetching existing profile:', err);
+        setProfileErrorMessage('An error occurred while loading your profile data. Check network or server logs.');
+      } finally {
+        setProfileLoading(false);
       }
     };
     fetchExistingProfile();
-  }, []); // Run once on component mount
+  }, [navigate]);
 
-  const handleChange = (e) => {
+  // --- Effect to fetch user's posts ---
+  useEffect(() => {
+    const fetchUserPosts = async () => {
+      if (!user?._id) { 
+        setPostsLoading(false);
+        setPostsErrorMessage('User not authenticated for fetching posts.');
+        return;
+      }
+
+      setPostsLoading(true);
+      setPostsErrorMessage('');
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setPostsErrorMessage('Authentication token missing for fetching posts.');
+        setPostsLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:5000/api/skills/user/${user._id}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+
+        if (response.ok && data.listings) {
+          setUserPosts(data.listings);
+        } else {
+          setPostsErrorMessage(data.message || `Failed to fetch your posts. Status: ${response.status}.`);
+          console.error('CompleteProfile useEffect (Posts Fetch): Failed to fetch user posts:', response.status, data);
+        }
+      } catch (err) {
+        console.error('CompleteProfile useEffect (Posts Fetch): Error fetching user posts:', err);
+        setPostsErrorMessage('An error occurred while fetching your posts. Check network or server logs.');
+      } finally {
+        setPostsLoading(false);
+      }
+    };
+    if (user) { 
+      fetchUserPosts();
+    }
+  }, [user]);
+
+  // --- Handlers for profile form ---
+  const handleProfileChange = (e) => {
     const { name, value } = e.target;
-    // This general handleChange works for all fields, storing the input value as a string.
-    setFormData({ ...formData, [name]: value });
-    setErrorMessage(''); // Clear error on input change
-    setSuccessMessage(''); // Clear success on input change
+    setProfileFormData({ ...profileFormData, [name]: value });
+    setProfileErrorMessage('');
+    setProfileSuccessMessage('');
   };
 
-  const handleSubmit = async (e) => {
+  const handleProfileSubmit = async (e) => {
     e.preventDefault();
-    setErrorMessage('');
-    setSuccessMessage('');
+    setProfileLoading(true);
+    setProfileErrorMessage('');
+    setProfileSuccessMessage('');
 
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/login'); // Redirect if not authenticated
+      navigate('/login');
       return;
     }
 
     try {
       const response = await fetch('http://localhost:5000/api/profile/complete', {
-        method: 'POST',
+        method: 'POST', 
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          fullName: formData.fullName,
-          bio: formData.bio,
-          // When sending to backend, convert the comma-separated string from the input
-          // into an array, then trim each item and filter out empty strings.
-          skillsOffered: formData.skillsOffered.split(',').map(s => s.trim()).filter(s => s),
-          skillsNeeded: formData.skillsNeeded.split(',').map(s => s.trim()).filter(s => s),
+          fullName: profileFormData.fullName,
+          bio: profileFormData.bio,
+          skillsOffered: profileFormData.skillsOffered.split(',').map(s => s.trim()).filter(s => s),
+          skillsNeeded: profileFormData.skillsNeeded.split(',').map(s => s.trim()).filter(s => s),
+          discordHandle: profileFormData.discordHandle,
         }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setSuccessMessage(data.message || 'Profile completed successfully!');
-        localStorage.setItem('profileComplete', 'true'); // Update localStorage
-        onProfileComplete(); // Update App.js state
-        // Give a brief moment for success message to show, then navigate
-        setTimeout(() => {
-          navigate('/'); // Redirect to dashboard after profile is complete
-        }, 1500); // 1.5 seconds delay
+        setProfileSuccessMessage(data.message || 'Profile updated successfully!');
+        
+        const updatedUser = { 
+            ...user, 
+            ...data.user, 
+            profileComplete: true 
+        };
+        login(token, updatedUser); 
+        
+        setTimeout(() => setProfileSuccessMessage(''), 3000);
+
       } else {
-        setErrorMessage(data.message || 'Failed to complete profile');
-        console.error('Profile completion failed (backend response):', data);
+        console.error('Profile update failed (backend response):', response.status, data);
+        setProfileErrorMessage(data.message || `Failed to update profile. Status: ${response.status}.`);
       }
     } catch (err) {
-      console.error('Profile completion error (frontend/network):', err);
-      setErrorMessage('An error occurred. Please try again.');
+      console.error('Profile update error (frontend/network/parsing):', err);
+      setProfileErrorMessage(`An error occurred. Please try again. Details: ${err.message || err.toString()}`);
+    } finally {
+      setProfileLoading(false);
     }
   };
 
+  // --- Handlers for post actions (Update Status, Delete) ---
+  const handleStatusChange = async (postId, newStatus) => {
+    // Show a confirmation dialog (replace with a custom modal in production)
+    if (!window.confirm(`Are you sure you want to change the status of this post to "${newStatus}"?`)) {
+      return;
+    }
+
+    setIsEditingStatus(prev => ({ ...prev, [postId]: true })); // Disable select for this post
+    setPostsErrorMessage(''); // Clear previous post errors
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Error: Authentication token missing for status update.');
+      setPostsErrorMessage('You must be logged in to update post status.');
+      setIsEditingStatus(prev => ({ ...prev, [postId]: false }));
+      navigate('/login');
+      return;
+    }
+
+    try {
+      console.log(`Attempting to update status for post ${postId} to ${newStatus}`);
+      const response = await fetch(`http://localhost:5000/api/skills/${postId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log('Post status updated successfully:', data.message, data.post);
+        // Use the 'post' object returned by the backend to update state for perfect sync
+        setUserPosts(prevPosts =>
+          prevPosts.map(post =>
+            post._id === postId ? { ...data.post } : post // Use data.post for the updated item
+          )
+        );
+        // Temporarily display success message
+        setPostsErrorMessage(`Success: ${data.message || 'Post status updated.'}`);
+        setTimeout(() => setPostsErrorMessage(''), 2000); // Clear after 2 seconds
+
+      } else {
+        console.error('Update status failed (backend response):', response.status, data);
+        setPostsErrorMessage(data.message || `Failed to update post status. Status: ${response.status}.`);
+        // Revert UI if update failed (optional, but good UX)
+        // You'd need to store the original status before changing it to revert.
+      }
+    } catch (err) {
+      console.error('Update status error (frontend/network):', err);
+      setPostsErrorMessage(`An error occurred while updating post status. Details: ${err.message || err.toString()}`);
+    } finally {
+      setIsEditingStatus(prev => ({ ...prev, [postId]: false })); // Re-enable select
+    }
+  };
+
+  const handleDeletePost = async (postId, postTitle) => {
+    if (!window.confirm(`Are you sure you want to delete the post "${postTitle}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    setPostsErrorMessage(''); // Clear previous errors
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Error: Authentication token missing for delete.');
+      setPostsErrorMessage('You must be logged in to delete posts.');
+      navigate('/login');
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/skills/${postId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log('Post deleted successfully:', data.message);
+        setUserPosts(prevPosts => prevPosts.filter(post => post._id !== postId));
+        // Temporarily display success message
+        setPostsErrorMessage(`Success: ${data.message || 'Post deleted.'}`);
+        setTimeout(() => setPostsErrorMessage(''), 2000);
+
+      } else {
+        console.error('Delete post failed (backend response):', response.status, data);
+        setPostsErrorMessage(data.message || `Failed to delete post. Status: ${response.status}.`);
+      }
+    } catch (err) {
+      console.error('Delete post error (frontend/network):', err);
+      setPostsErrorMessage(`An error occurred while deleting the post. Details: ${err.message || err.toString()}`);
+    }
+  };
+
+
+  if (profileLoading && !profileSuccessMessage && !profileErrorMessage) {
+    return (
+      <div className="complete-profile-page loading-state">
+        <div className="loading-message-box">
+          <p className="loading-text">Loading profile data... Please wait.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        <h2 className="text-2xl font-bold mb-6 text-center">Complete Your Profile</h2>
+    <div className="complete-profile-page">
+      {/* Profile Edit Form */}
+      <div className="complete-profile-form-container">
+        <h2 className="form-title">Complete / Edit Your Profile</h2>
         
-        {errorMessage && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <span className="block sm:inline">{errorMessage}</span>
+        {profileErrorMessage && (
+          <div className="error-message" role="alert">
+            <span>{profileErrorMessage}</span>
           </div>
         )}
-        {successMessage && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <span className="block sm:inline">{successMessage}</span>
+        {profileSuccessMessage && (
+          <div className="success-message" role="alert">
+            <span>{profileSuccessMessage}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="fullName" className="block text-gray-700 text-sm font-bold mb-2">
+        <form onSubmit={handleProfileSubmit} className="profile-form">
+          <div className="form-group">
+            <label htmlFor="fullName" className="form-label">
               Full Name
             </label>
             <input
               type="text"
               id="fullName"
               name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              value={profileFormData.fullName}
+              onChange={handleProfileChange}
+              className="form-input"
               required
             />
           </div>
-          <div className="mb-4">
-            <label htmlFor="bio" className="block text-gray-700 text-sm font-bold mb-2">
+          <div className="form-group">
+            <label htmlFor="bio" className="form-label">
               Bio
             </label>
             <textarea
               id="bio"
               name="bio"
-              value={formData.bio}
-              onChange={handleChange}
+              value={profileFormData.bio}
+              onChange={handleProfileChange}
               rows="3"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="form-textarea"
             ></textarea>
           </div>
-          <div className="mb-4">
-            <label htmlFor="skillsOffered" className="block text-gray-700 text-sm font-bold mb-2">
+          <div className="form-group">
+            <label htmlFor="discordHandle" className="form-label">
+              Discord Handle (Optional)
+            </label>
+            <input
+              type="text"
+              id="discordHandle"
+              name="discordHandle"
+              value={profileFormData.discordHandle}
+              onChange={handleProfileChange}
+              className="form-input"
+              placeholder="e.g., yourusername#1234 or your.new.username"
+            />
+            <p className="form-help-text">
+                Enter your Discord username. (e.g., `SkillSwapUser#1234` for old handles or `skillswap.user` for new handles). This helps others contact you.
+            </p>
+          </div>
+          <div className="form-group">
+            <label htmlFor="skillsOffered" className="form-label">
               Skills You Can Offer (comma-separated)
             </label>
             <input
               type="text"
               id="skillsOffered"
               name="skillsOffered"
-              // FIX: Directly use formData.skillsOffered as value. It will be a string.
-              value={formData.skillsOffered} 
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              value={profileFormData.skillsOffered} 
+              onChange={handleProfileChange}
+              className="form-input"
             />
           </div>
-          <div className="mb-6">
-            <label htmlFor="skillsNeeded" className="block text-gray-700 text-sm font-bold mb-2">
+          <div className="form-group">
+            <label htmlFor="skillsNeeded" className="form-label">
               Skills You Need (comma-separated)
             </label>
             <input
               type="text"
               id="skillsNeeded"
               name="skillsNeeded"
-              // FIX: Directly use formData.skillsNeeded as value. It will be a string.
-              value={formData.skillsNeeded} 
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              value={profileFormData.skillsNeeded} 
+              onChange={handleProfileChange}
+              className="form-input"
             />
           </div>
-          <div className="flex items-center justify-between">
+          <div className="form-actions">
             <button
               type="submit"
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="submit-button"
+              disabled={profileLoading}
             >
-              Save Profile
+              {profileLoading ? 'Saving Profile...' : 'Save Profile'}
             </button>
           </div>
         </form>
+      </div>
+
+      {/* User Posts Section */}
+      <div className="user-posts-section">
+        <h2 className="section-title">Your Posted Skills</h2>
+        {postsErrorMessage && ( // Display error message for posts section
+          <div className="error-message" role="alert">
+            <span>{postsErrorMessage}</span>
+          </div>
+        )}
+        {postsLoading ? (
+          <p className="loading-message-text">Loading your posts...</p>
+        ) : userPosts.length > 0 ? (
+          <div className="user-posts-grid">
+            {userPosts.map(post => (
+              <div key={post._id} className="user-post-card">
+                <h3>{post.title}</h3>
+                <p className="post-description">{post.description}</p>
+                <p className="post-category">Category: {post.category}</p>
+                {/* Display other details like skillsOffered/Needed from the post itself */}
+                <p className="post-tags">
+                    {post.type === 'offer' && post.skills && post.skills.length > 0 && (
+                        post.skills.map((skill, idx) => (
+                            <span key={`offer-${post._id}-${idx}`} className="skill-tag-offered">{skill}</span>
+                        ))
+                    )}
+                    {post.type === 'request' && post.skills && post.skills.length > 0 && (
+                        post.skills.map((skill, idx) => (
+                            <span key={`request-${post._id}-${idx}`} className="skill-tag-needed">{skill}</span>
+                        ))
+                    )}
+                </p>
+
+                <p className="post-status">Status: 
+                  <select 
+                    value={post.status} 
+                    onChange={(e) => handleStatusChange(post._id, e.target.value)}
+                    className="status-select"
+                    disabled={isEditingStatus[post._id]} // Disable while updating
+                  >
+                    <option value="open">Open</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                    <option value="closed">Closed</option> {/* Added 'closed' option */}
+                  </select>
+                </p>
+                <div className="post-actions">
+                  <button 
+                    onClick={() => handleDeletePost(post._id, post.title)} 
+                    className="delete-button"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="no-data-message">You haven't posted any skills yet. <Link to="/postskill">Post your first skill!</Link></p>
+        )}
       </div>
     </div>
   );
