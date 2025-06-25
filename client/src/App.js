@@ -11,6 +11,8 @@ import Dashboard from './pages/Dashboard';
 import PostSkill from './pages/PostSkill';
 import AboutUs from './pages/AboutUs';
 import ContactUs from './pages/ContactUs'; 
+import ForgotPassword from './pages/ForgotPassword'; // NEW
+import ResetPassword from './pages/ResetPassword'; // NEW
 
 // Import the Layout component
 import Layout from './components/Layout'; 
@@ -21,8 +23,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import PublicOnlyRoute from './components/PublicOnlyRoute'; 
 import GoogleAuthCallback from './pages/GoogleAuthCallback';
 
-// Import your CSS (if you have App.css)
-import './App.css';
+
 
 // A wrapper component to access AuthContext's loading state
 function AppContent() {
@@ -58,6 +59,9 @@ function AppContent() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
+          <Route path="/forgotpassword" element={<ForgotPassword />} /> {/* NEW */}
+          <Route path="/resetpassword/:token" element={<ResetPassword />} /> {/* NEW */}
+        
         </Route>
 
         <Route path="/" element={<Layout><Dashboard /></Layout>} />
@@ -67,7 +71,8 @@ function AppContent() {
        
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
-          <Route path="/browse" element={<Layout><Browse /></Layout>} />
+           <Route path="/browse" element={<Layout><Browse /></Layout>} />
+        
           <Route path="/postskill" element={<Layout><PostSkill /></Layout>} />
           <Route path="/complete-profile" element={<Layout><CompleteProfile /></Layout>} />
           <Route path="/my-profile" element={<Layout><UserProfile /></Layout>} /> 

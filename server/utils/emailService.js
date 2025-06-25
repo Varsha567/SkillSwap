@@ -1,38 +1,41 @@
 const nodemailer = require('nodemailer');
-require('dotenv').config(); // Ensure dotenv is loaded for env variables
+const dotenv = require('dotenv');
 
+dotenv.config(); // Ensure dotenv is configured here as well
+
+// Create a transporter object using the default SMTP transport
 const transporter = nodemailer.createTransport({
-    service: 'gmail', // Use 'gmail' for testing; for production, change to 'smtp.sendgrid.net', etc.
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    secure: process.env.EMAIL_SECURE === 'true', // Use 'true' for 465, 'false' for other ports (like 587)
     auth: {
-        user: process.env.EMAIL_USER, 
-        pass: process.env.EMAIL_PASS, 
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
     },
-    // If you're using a specific port/host for a non-Gmail service:
-    // host: "smtp.example.com",
-    // port: 587,
-    // secure: false, // true for 465, false for other ports
+    // Required for some providers if you face issues (e.g. Gmail for less secure apps)
+    // tls: {
+    //     ciphers: 'SSLv3'
+    // }
 });
 
-const sendEmail = async (to, subject, htmlContent) => {
+// Function to send a generic email
+// To be consistent with the password reset functionality, 
+// let's adjust this to accept an object for options.
+exports.sendEmail = async (options) => {
     const mailOptions = {
-        from: `"SkillSwap Platform" <${process.env.EMAIL_USER}>`, // Sender address
-        to: to, // List of receivers
-        subject: subject, // Subject line
-        html: htmlContent, // html body
+        from: `${process.env.FROM_NAME} <${process.env.FROM_EMAIL}>`, // Sender address
+        to: options.email,      // List of receivers
+        subject: options.subject, // Subject line
+        html: options.html,       // HTML body
+        text: options.text || '', // Plain text body (optional, good for fallback)
     };
 
     try {
-        let info = await transporter.sendMail(mailOptions);
-        console.log('Message sent: %s', info.messageId);
-        // Optional: console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-        return true;
+        await transporter.sendMail(mailOptions);
+        console.log(`Email sent to ${options.email}`);
+        return true; // Indicate success
     } catch (error) {
-        console.error('Error sending email to', to, ':', error);
-        if (error.response) {
-            console.error('Nodemailer response error:', error.response);
-        }
-        return false;
+        console.error(`Error sending email to ${options.email}:`, error);
+        return false; // Indicate failure
     }
 };
-
-module.exports = { sendEmail };

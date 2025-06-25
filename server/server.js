@@ -38,6 +38,7 @@ app.use('/api/profile', profileRoutes);
 
 app.use('/api/skills', skillRoutes);
 app.use('/api/auth', require('./routes/authGoogle'));
+app.use('/api/chat', require('./routes/chatRoutes')); // NEW: Chatbot routes
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);

@@ -1,118 +1,115 @@
-/* Import Google Font - Inter for consistency */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
-/* Color Palette Variables (Ensure these are globally accessible) */
+/* ContactUs.css */
 :root {
-    --primary-bg: #1A1A2E; /* Deep Night Blue */
-    --secondary-bg: #1F4068; /* Dark Teal Blue (for cards, header, etc.) */
-    --primary-text: #E0E0E0; /* Off-White / Light Grey */
-    --accent-primary: #F3B05C; /* Warm Sunset Orange (Primary CTA/Accent) */
-    --accent-secondary: #FF7B54; /* Lively Coral Orange (Secondary CTA/Hover) */
-    --shadow-dark: rgba(0, 0, 0, 0.4);
+  --primary-orange: #FF7000;
+  --secondary-orange: #F97432;
+  --accent-light: #FFAC4A;
+  --brand-red: #e6635a;
+  --white: #ffffff;
+  --dark-text: #2a2a2a;
+  --light-gray: #f5f5f5;
+  --border-gray: #e0e0e0;
 }
 
 .contact-us-page {
-    background-color: var(--primary-bg);
-    min-height: calc(100vh - 4rem); /* Adjust based on header/footer height */
-    padding: 3rem 1.5rem;
-    font-family: 'Inter', sans-serif;
-    color: var(--primary-text);
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
+  background-color: var(--white);
+  min-height: calc(100vh - 80px); /* Adjust based on header height */
+  padding: 2rem 1rem;
 }
 
 .contact-us-container {
-    background-color: var(--secondary-bg);
-    padding: 2.5rem;
-    border-radius: 1rem;
-    box-shadow: 0 8px 20px var(--shadow-dark);
-    max-width: 700px;
-    width: 100%;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
 .contact-us-container h1 {
-    font-size: 2.8rem;
-    font-weight: 800;
-    color: var(--accent-primary);
-    margin-bottom: 1.5rem;
-    line-height: 1.2;
+  color: var(--primary-orange);
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
 }
 
 .contact-us-container p {
-    font-size: 1.1rem;
-    line-height: 1.7;
-    color: rgba(224, 224, 224, 0.9);
-    margin-bottom: 1rem;
-    text-align: left; /* Align paragraphs to the left */
+  color: var(--dark-text);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .contact-info-section {
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px dashed rgba(255, 255, 255, 0.1); /* Subtle separator */
-    text-align: left; /* Align contact info to the left */
+  background-color: var(--light-gray);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 .contact-info-section h3 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary-text);
-    margin-bottom: 1rem;
-    text-align: center; /* Keep title centered */
+  color: var(--primary-orange);
+  font-size: 1.3rem;
+  margin-bottom: 1.2rem;
+  text-align: center;
 }
 
 .contact-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-    font-size: 1rem;
-    color: var(--primary-text);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.8rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
 }
 
-.contact-item i { /* Font Awesome icon styling */
-    font-size: 1.25rem;
-    color: var(--accent-secondary);
-    margin-right: 1rem;
-    min-width: 25px; /* Ensure icon has enough space */
-    text-align: center;
+.contact-item:hover {
+  background-color: rgba(255, 172, 74, 0.1);
+}
+
+.contact-item i {
+  color: var(--primary-orange);
+  font-size: 1.2rem;
+  min-width: 30px;
+  text-align: center;
+}
+
+.contact-item p {
+  color: var(--dark-text);
+  margin: 0;
+  text-align: left;
 }
 
 .contact-item a {
-    color: var(--accent-primary);
-    text-decoration: none;
-    transition: color 0.2s ease;
+  color: var(--primary-orange);
+  text-decoration: none;
+  transition: color 0.2s;
 }
 
 .contact-item a:hover {
-    color: var(--accent-secondary);
-    text-decoration: underline;
+  color: var(--brand-red);
+  text-decoration: underline;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .contact-us-page {
-        padding: 2rem 1rem;
-    }
-    .contact-us-container {
-        padding: 1.5rem;
-    }
-    .contact-us-container h1 {
-        font-size: 2rem;
-    }
-    .contact-us-container p {
-        font-size: 1rem;
-    }
-    .contact-info-section h3 {
-        font-size: 1.2rem;
-    }
-    .contact-item {
-        font-size: 0.95rem;
-    }
-    .contact-item i {
-        font-size: 1.1rem;
-        margin-right: 0.75rem;
-    }
+/* Responsive Design */
+@media (max-width: 600px) {
+  .contact-us-container {
+    padding: 0;
+  }
+  
+  .contact-us-container h1 {
+    font-size: 1.7rem;
+  }
+  
+  .contact-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+  
+  .contact-item i {
+    align-self: center;
+  }
 }

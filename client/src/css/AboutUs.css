@@ -1,95 +1,137 @@
-/* Import Google Font - Inter for consistency */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
-/* Color Palette Variables (Ensure these are globally accessible) */
+/* AboutUs.css */
 :root {
-    --primary-bg: #1A1A2E; /* Deep Night Blue */
-    --secondary-bg: #1F4068; /* Dark Teal Blue (for cards, header, etc.) */
-    --primary-text: #E0E0E0; /* Off-White / Light Grey */
-    --accent-primary: #F3B05C; /* Warm Sunset Orange (Primary CTA/Accent) */
-    --accent-secondary: #FF7B54; /* Lively Coral Orange (Secondary CTA/Hover) */
-    --shadow-dark: rgba(0, 0, 0, 0.4);
+  /* Primary colors */
+  --primary-orange: #FF7000;
+  --secondary-orange: #F97432;
+  --accent-light: #FFAC4A;
+  --accent-lighter: #F9C87C;
+  --accent-lightest: #FFFEC9;
+  --brand-red: #e6635a;
+  
+  /* Contrasting colors */
+  --dark-blue: #2c3e50;
+  --teal: #1abc9c;
+  --light-gray: #ecf0f1;
+  
+  /* Neutrals */
+  --white: #ffffff;
+  --black: #222222;
+  --gray: #95a5a6;
 }
 
+/* About Us Page Styles */
 .about-us-page {
-    background-color: var(--primary-bg);
-    min-height: calc(100vh - 4rem); /* Adjust based on header/footer height */
-    padding: 3rem 1.5rem;
-    font-family: 'Inter', sans-serif;
-    color: var(--primary-text);
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
+  background-color: var(--white);
+  min-height: calc(100vh - 80px); /* Adjust based on header height */
+  padding: 3rem 0;
 }
 
 .about-us-container {
-    background-color: var(--secondary-bg);
-    padding: 2.5rem;
-    border-radius: 1rem;
-    box-shadow: 0 8px 20px var(--shadow-dark);
-    max-width: 800px;
-    width: 100%;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  color: var(--dark-blue);
 }
 
 .about-us-container h1 {
-    font-size: 2.8rem;
-    font-weight: 800;
-    color: var(--accent-primary);
-    margin-bottom: 1.5rem;
-    line-height: 1.2;
+  color: var(--primary-orange);
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  text-align: center;
+}
+
+.about-us-container h1::after {
+  content: '';
+  display: block;
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(to right, var(--primary-orange), var(--brand-red));
+  margin: 1rem auto 2rem;
+  border-radius: 2px;
 }
 
 .about-us-container h2 {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--primary-text);
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    position: relative;
-    padding-bottom: 0.5rem;
+  color: var(--secondary-orange);
+  font-size: 1.8rem;
+  margin: 2.5rem 0 1.2rem;
+  position: relative;
+  padding-left: 1rem;
 }
 
-.about-us-container h2::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 0;
-    width: 60px;
-    height: 3px;
-    background-color: var(--accent-secondary);
-    border-radius: 2px;
+.about-us-container h2::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 5px;
+  background-color: var(--primary-orange);
+  border-radius: 3px;
 }
 
 .about-us-container p {
-    font-size: 1.1rem;
-    line-height: 1.7;
-    color: rgba(224, 224, 224, 0.9);
-    margin-bottom: 1rem;
-    text-align: left; /* Align paragraphs to the left */
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  color: var(--black);
 }
 
-.about-us-container p:last-of-type {
-    margin-bottom: 0;
+/* Decorative Elements */
+.about-us-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 300px;
+  background: linear-gradient(135deg, rgba(255, 112, 0, 0.1) 0%, rgba(230, 99, 90, 0.1) 100%);
+  z-index: -1;
+  clip-path: ellipse(100% 80% at 50% 0%);
 }
 
-/* Responsive adjustments */
+/* Call-to-Action Emphasis */
+.about-us-container p:last-child {
+  font-weight: 600;
+  color: var(--primary-orange);
+  text-align: center;
+  font-size: 1.2rem;
+  margin-top: 2.5rem;
+  padding: 1rem;
+  background-color: var(--accent-lightest);
+  border-radius: 8px;
+  border-left: 4px solid var(--primary-orange);
+}
+
+/* Responsive Styles */
 @media (max-width: 768px) {
-    .about-us-page {
-        padding: 2rem 1rem;
-    }
-    .about-us-container {
-        padding: 1.5rem;
-    }
-    .about-us-container h1 {
-        font-size: 2rem;
-    }
-    .about-us-container h2 {
-        font-size: 1.6rem;
-    }
-    .about-us-container p {
-        font-size: 1rem;
-    }
+  .about-us-container {
+    padding: 0 1.5rem;
+  }
+  
+  .about-us-container h1 {
+    font-size: 2rem;
+  }
+  
+  .about-us-container h2 {
+    font-size: 1.5rem;
+  }
+  
+  .about-us-container p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-us-page {
+    padding: 2rem 0;
+  }
+  
+  .about-us-container h1::after {
+    margin: 0.5rem auto 1.5rem;
+  }
+  
+  .about-us-container h2 {
+    margin: 2rem 0 1rem;
+  }
 }

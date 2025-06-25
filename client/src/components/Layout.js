@@ -1,8 +1,8 @@
     import React from 'react';
     import Header from './Header'; // Import the Header component
     import { useAuth } from '../context/AuthContext'; // Import useAuth hook
-    import Footer from './Footer'; // Import a Footer component if you create one
-
+    import Footer from './Footer'; 
+    import ChatbotWidget from './ChatbotWidget';
     // The Layout component wraps your page content and provides consistent header/footer
     const Layout = ({ children }) => { // No longer accepts isAuthenticated, onLogout props directly
       const { isLoggedIn, logout } = useAuth(); // Get auth state and logout function from context
@@ -18,6 +18,7 @@
           </main>
 
           <Footer />
+          <ChatbotWidget />
         </div>
       );
     };

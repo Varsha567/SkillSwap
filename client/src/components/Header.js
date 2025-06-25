@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../css/Header.css';
+import skillswapLogo from '../assets/SkillSwap-logo.png'; 
 
 const Header = () => {
   const { isLoggedIn, user, logout } = useAuth();
@@ -41,7 +42,7 @@ const Header = () => {
     <header className="header">
       <div className="header-container">
         <Link to="/" className="header-logo">
-          <img src="https://placehold.co/50x50/ADD8E6/000000?text=SS" alt="SkillSwap Logo" className="logo-img" />
+          <img src={skillswapLogo} alt="SkillSwap Logo" className="logo-img" />
           SkillSwap
         </Link>
         <nav className="header-nav">

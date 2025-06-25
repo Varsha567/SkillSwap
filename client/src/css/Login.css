@@ -1,31 +1,242 @@
-.social-login-section {
-    margin-top: 1.5rem;
-    text-align: center;
+/* Login.css */
+
+/* Define CSS Variables for colors based on SkillCard.css */
+:root {
+  --primary-orange: #FF7000;
+  --secondary-orange: #F97432;
+  --accent-light: #FFAC4A;
+  --accent-lighter: #F9C87C;
+  --accent-lightest: #FFFEC9;
+  --brand-red: #e6635a;
+  --white: #ffffff;
+  --dark-text: #2a2a2a;
+  --light-gray: #f5f5f5;
+  --border-gray: #e0e0e0;
 }
-.social-login-section p {
-    color: var(--primary-text);
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
+
+/* Page Container for Login/Auth Forms */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Align to top to give some space from header */
+  min-height: calc(100vh - 64px); /* Full viewport height minus header height */
+  padding: 2rem 1rem; /* Padding around the card */
+  background-color: var(--light-gray);
+  font-family: 'Inter', sans-serif;
 }
+
+/* Auth Card (wrapper for login/signup forms) */
+.auth-card {
+  background-color: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  width: 100%;
+  max-width: 400px; /* Max width for the login card */
+  border: 1px solid rgba(255, 172, 74, 0.2);
+  position: relative;
+  overflow: hidden;
+  display: flex; /* Use flexbox for internal layout */
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center; /* Center items horizontally */
+  text-align: center; /* Center text within the card */
+}
+
+/* Left accent bar for the card, similar to SkillCard */
+.auth-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, var(--primary-orange), var(--accent-light));
+}
+
+/* Title Styling */
+.auth-card h2 {
+  color: var(--primary-orange);
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+/* Form Styling */
+.auth-form {
+  width: 100%; /* Make form take full width of card */
+  margin-bottom: 1rem; /* Space before switch link */
+}
+
+/* Form Group for Label + Input */
+.form-group {
+  margin-bottom: 1rem; /* Space between form fields */
+  text-align: left; /* Align labels and inputs to the left within their group */
+}
+
+.form-group label {
+  display: block;
+  color: var(--dark-text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+/* Input Fields */
+.auth-input {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  color: var(--dark-text);
+  background-color: var(--white);
+  border: 1px solid var(--border-gray);
+  border-radius: 8px; /* Rounded corners */
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: var(--primary-orange);
+  box-shadow: 0 0 0 3px rgba(255, 112, 0, 0.2);
+}
+
+/* Error Message */
+.error-message {
+  background-color: rgba(230, 99, 90, 0.1);
+  border: 1px solid var(--brand-red);
+  color: var(--brand-red);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Login Button */
+.auth-button {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--white);
+  background-color: var(--primary-orange);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 8px rgba(255, 112, 0, 0.2);
+  margin-top: 1.5rem; /* Space above button */
+}
+
+.auth-button:hover:not(:disabled) {
+  background-color: var(--secondary-orange);
+  transform: translateY(-2px);
+}
+
+.auth-button:disabled {
+  background-color: var(--accent-light);
+  cursor: not-allowed;
+  opacity: 0.8;
+  box-shadow: none;
+}
+
+/* Forgot password / Sign Up links */
+.auth-switch-link {
+  font-size: 0.9rem;
+  color: var(--dark-text);
+  margin-top: 1rem; /* Space from button */
+}
+
+.auth-switch-link a {
+  color: var(--primary-orange);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.auth-switch-link a:hover {
+  color: var(--secondary-orange);
+  text-decoration: underline;
+}
+
+/* Separator for Social Login */
+.social-login-separator {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 1.5rem 0; /* Space above and below "OR" */
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.social-login-separator hr {
+  flex-grow: 1;
+  border: none;
+  border-top: 1px solid var(--border-gray);
+  margin: 0 0.5rem;
+}
+
+/* Google Sign-in Button */
 .google-signin-button {
-    background-color: #4285F4; 
-    color: white;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--dark-text); /* Google's text is usually dark */
+  background-color: var(--white);
+  border: 1px solid var(--border-gray);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); /* Subtle shadow for button */
+  gap: 0.75rem; /* Space between icon and text */
 }
+
 .google-signin-button:hover {
-    background-color: #357ae8;
+  background-color: var(--light-gray);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 .google-icon {
-    width: 24px;
-    height: 24px;
-} 
+  width: 20px; /* Adjust size as needed */
+  height: 20px;
+  vertical-align: middle;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .auth-card {
+    padding: 1.5rem;
+    border-radius: 8px;
+  }
+
+  .auth-card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .auth-input,
+  .auth-button,
+  .google-signin-button {
+    font-size: 0.95rem;
+    padding: 0.65rem 1rem;
+  }
+
+  .auth-switch-link {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 1rem 0.5rem;
+  }
+  .auth-card {
+    border-radius: 8px;
+  }
+}
