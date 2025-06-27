@@ -45,14 +45,37 @@ exports.createSkillListing = async (req, res) => {
 // @desc    Get all active skill listings
 // @access  Public
 exports.getAllSkills = async (req, res) => {
-  try {
-    const skills = await PostS.find({ status: 'active' }).sort({ createdAt: -1 }); // Only show 'active' skills
-    res.status(200).json({ listings: skills });
-  } catch (err) {
-    console.error('Error fetching all skills:', err.message);
-    res.status(500).json({ message: 'Server error while fetching skills.' });
-  }
+    try {
+        const { category, skillLevel, search } = req.query;
+
+        let query = { status: 'active' };
+
+        if (category && category !== 'All') {
+            // FIX: Use case-insensitive regex for category matching
+            query.category = new RegExp(category, 'i'); 
+        }
+
+        if (skillLevel && skillLevel !== 'All') { // Apply skill level filter if provided and not 'All'
+            query.skillLevel = skillLevel;
+        }
+
+        if (search) {
+            const searchRegex = new RegExp(search, 'i');
+            query.$or = [
+                { title: { $regex: searchRegex } },
+                { description: { $regex: searchRegex } }
+            ];
+        }
+
+        const skills = await PostS.find(query).sort({ createdAt: -1 });
+        res.status(200).json({ listings: skills });
+
+    } catch (err) {
+        console.error('Error fetching all skills:', err.message);
+        res.status(500).json({ message: 'Server error while fetching skill listings.' });
+    }
 };
+
 
 // @route   GET api/skills/user/:userId
 // @desc    Get all skill listings by a specific user (including all statuses if owned by auth user)

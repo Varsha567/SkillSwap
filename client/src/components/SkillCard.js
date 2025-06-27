@@ -1,8 +1,21 @@
-import React from 'react';
+import React,{useEffect}from 'react';
 import { Link } from 'react-router-dom';
 import '../css/SkillCard.css'; // NEW: Import dedicated CSS for SkillCard
 
 const SkillCard = ({ skill }) => {
+     useEffect(() => {
+     const skillCards = document.querySelectorAll('.skill-card');
+     const observer = new IntersectionObserver((entries) => {
+       entries.forEach((entry, index) => {
+         if (entry.isIntersecting) {
+           entry.target.style.setProperty('--animation-order', index);
+           entry.target.classList.add('animated');
+         }
+       });
+     }, { threshold: 0.1 });
+     
+     skillCards.forEach(card => observer.observe(card));
+   }, []);
   if (!skill) {
     return <div className="skill-card-placeholder">No skill data available.</div>;
   }

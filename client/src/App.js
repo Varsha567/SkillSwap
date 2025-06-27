@@ -23,7 +23,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import PublicOnlyRoute from './components/PublicOnlyRoute'; 
 import GoogleAuthCallback from './pages/GoogleAuthCallback';
 
-
+import './css/animations.css';
 
 // A wrapper component to access AuthContext's loading state
 function AppContent() {

@@ -420,10 +420,8 @@ const CompleteProfile = () => {
                     className="status-select"
                     disabled={isEditingStatus[post._id]} // Disable while updating
                   >
-                    <option value="open">Open</option>
-                    <option value="in-progress">In Progress</option>
-                    <option value="completed">Completed</option>
-                    <option value="cancelled">Cancelled</option>
+                    <option value="open">Active</option>
+                    
                     <option value="closed">Closed</option> {/* Added 'closed' option */}
                   </select>
                 </p>

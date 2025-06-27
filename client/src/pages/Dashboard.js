@@ -1,9 +1,34 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import '../css/dashboard.css'; // Your custom CSS import
+import '../css/dashboard.css'; // Your custom CSS i
+
 
 const Dashboard = () => {
+  // Add this to your dashboard component
+useEffect(() => {
+  const animateOnScroll = () => {
+    const elements = document.querySelectorAll('.how-it-works-section, .step-card, .explore-skills-cta, .testimonial-card');
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animated');
+          
+          // Add staggered delay for step cards
+          if (entry.target.classList.contains('step-card')) {
+            const index = Array.from(entry.target.parentElement.children).indexOf(entry.target);
+            entry.target.style.transitionDelay = `${index * 0.1}s`;
+          }
+        }
+      });
+    }, { threshold: 0.1 });
+    
+    elements.forEach(el => observer.observe(el));
+  };
+  
+  animateOnScroll();
+}, []);
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth(); // Get isLoggedIn status
 
@@ -106,7 +131,7 @@ const Dashboard = () => {
               Login to Get Started
             </Link>
           )}
-          <Link to="/browse" className="btn-secondary cta-button">
+          <Link to="/browse" className="btn-primary cta-button">
             {isLoggedIn ? "Browse Skills Now" : "View Public Listings"}
           </Link>
         </div>

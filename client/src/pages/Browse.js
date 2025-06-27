@@ -1,101 +1,137 @@
-        import React, { useState, useEffect } from 'react';
-        // Header is rendered by Layout, so no Header import needed here
-        import SkillCard from '../components/SkillCard'; // Make sure SkillCard exists
-        import { Link } from 'react-router-dom'; // Keep Link for routing
-        // No need for useAuth here unless specific Browse content changes based on auth status
-
-        const Browse = () => { // No longer accepts isAuthenticated, onLogout props
-            const [skills, setSkills] = useState([]);
-            const [loading, setLoading] = useState(true);
-            const [error, setError] = useState(null);
-            const [searchTerm, setSearchTerm] = useState('');
-
-            useEffect(() => {
-                const fetchSkills = async () => {
-                    setLoading(true);
-                    setError(null);
-                    try {
-                        const response = await fetch('http://localhost:5000/api/skills');
-                        const data = await response.json();
-
-                        if (response.ok) {
-                            setSkills(data.listings || []);
-                        } else {
-                            setError(data.message || 'Failed to fetch skills.');
-                            console.error('Failed to fetch skills:', data);
-                        }
-                    } catch (err) {
-                        console.error('Network error fetching skills:', err);
-                        setError('An error occurred while fetching skills. Please try again later.');
-                    } finally {
-                        setLoading(false);
-                    }
-                };
-
-                fetchSkills();
-            }, []);
-
-            const handleSearchChange = (e) => {
-                setSearchTerm(e.target.value);
-            };
-
-            const handleSearchSubmit = (e) => {
-                e.preventDefault();
-                console.log("Searching for:", searchTerm);
-                // Future: Implement actual search logic by refetching skills with a query parameter
-            };
-
-            if (loading) {
-                return (
-                    <main className="flex-grow flex justify-center items-center bg-gray-100 py-8">
-                        <p>Loading skills...</p>
-                    </main>
-                );
+import React, { useState, useEffect, useCallback } from 'react';
+import SkillCard from '../components/SkillCard';
+import '../css/Browse.css'; // Your specific CSS for the Browse page
+import '../css/dashboard.css';
+const Browse = () => {
+  useEffect(() => {
+    const animateOnScroll = () => {
+      const elements = document.querySelectorAll('.how-it-works-section, .step-card, .explore-skills-cta, .testimonial-card');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animated');
+            
+            // Add staggered delay for step cards
+            if (entry.target.classList.contains('step-card')) {
+              const index = Array.from(entry.target.parentElement.children).indexOf(entry.target);
+              entry.target.style.transitionDelay = `${index * 0.1}s`;
             }
+          }
+        });
+      }, { threshold: 0.1 });
+      
+      elements.forEach(el => observer.observe(el));
+    };
+    
+    animateOnScroll();
+  }, []);
+  const [skills, setSkills] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-            if (error) {
-                return (
-                    <main className="flex-grow flex justify-center items-center bg-gray-100 py-8">
-                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                            <span className="block sm:inline">{error}</span>
-                        </div>
-                    </main>
-                );
-            }
+  // Filter State: Only category now, no skill level or text search
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
-            return (
-                <main className="flex-grow py-8 bg-gray-100">
-                    <div className="container mx-auto px-4">
-                        <section className="hero-section text-center mb-8">
-                            <h1 className="text-4xl font-bold text-gray-800 mb-4">Swap Your Skills Today</h1>
-                            <p className="text-lg text-gray-600 mb-6">Explore skills available for swapping.</p>
-                            <form onSubmit={handleSearchSubmit} className="search-bar flex justify-center space-x-2">
-                                <input
-                                    type="text"
-                                    placeholder="Search skills..."
-                                    value={searchTerm}
-                                    onChange={handleSearchChange}
-                                    className="shadow appearance-none border rounded w-full max-w-sm py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                />
-                                <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                    Search
-                                </button>
-                            </form>
-                        </section>
+  // Define available categories (should match your backend/model)
+  const categories = [
+    'All', 'Programming', 'Design', 'Music', 'Language Exchange', 'Academics'];
 
-                        <section className="skills-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {skills.length > 0 ? (
-                                skills.map(skill => (
-                                    <SkillCard key={skill._id} skill={skill} />
-                                ))
-                            ) : (
-                                <p className="col-span-full text-center text-gray-600">No skills available to browse yet.</p>
-                            )}
-                        </section>
-                    </div>
-                </main>
-            );
-        };
+  // Function to fetch skills with applied category filter
+  const fetchSkills = useCallback(async () => {
+    setLoading(true);
+    setError(null);
 
-        export default Browse;
-        
+    try {
+      const queryParams = new URLSearchParams();
+      if (selectedCategory !== 'All') {
+        queryParams.append('category', selectedCategory);
+      }
+      // Removed skillLevel and search query params
+
+      const response = await fetch(`http://localhost:5000/api/skills?${queryParams.toString()}`);
+      const data = await response.json();
+
+      if (response.ok && data.listings) {
+        setSkills(data.listings);
+      } else {
+        setError(data.message || 'Failed to fetch skills.');
+        console.error('Failed to fetch skills:', data);
+      }
+    } catch (err) {
+      console.error('Error fetching skills:', err);
+      setError('Network error: Could not connect to the server.');
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedCategory]); // Re-fetch when selectedCategory changes
+
+  // Fetch skills on component mount and when category filter changes
+  useEffect(() => {
+    fetchSkills();
+  }, [fetchSkills]);
+
+  return (
+    <div className="browse-page-container">
+      {/* Hero Section for Browse Page */}
+      <section className="browse-hero-section">
+        <div className="browse-hero-content">
+          <h1>Explore Skills for Swapping</h1> {/* Updated hero text */}
+          <p className="browse-hero-subtext">
+            Discover a wide range of expertise offered by our community.
+          </p>
+          {/* Category Buttons */}
+          <div className="category-buttons-container">
+            {categories.map(category => (
+              <button
+                key={category}
+                className={`category-button ${selectedCategory === category ? 'active' : ''}`}
+                onClick={() => setSelectedCategory(category)}
+              >
+                {/* Optional: Add icons for categories if you want */}
+                {/* Example with Font Awesome (make sure FA CDN is linked): */}
+                {category === 'Programming' && <i className="fas fa-code"></i>}
+                {category === 'Design' && <i className="fas fa-paint-brush"></i>}
+                {category === 'Music' && <i className="fas fa-music"></i>}
+                {category === 'Language Exchange' && <i className="fas fa-comments"></i>}
+                {category === 'Academics' && <i className="fas fa-book-reader"></i>}
+                {category === 'Cooking' && <i className="fas fa-utensils"></i>}
+                {category === 'Crafts' && <i className="fas fa-cut"></i>}
+                {category === 'Photography' && <i className="fas fa-camera-retro"></i>}
+                {category === 'Writing' && <i className="fas fa-pen-nib"></i>}
+                {category === 'Marketing' && <i className="fas fa-bullhorn"></i>}
+                {category === 'Fitness' && <i className="fas fa-dumbbell"></i>}
+                {category === 'Other' && <i className="fas fa-ellipsis-h"></i>}
+                {category === 'All' && <i className="fas fa-grip-horizontal"></i>}
+                
+                <span>{category}</span> {/* Text for the category */}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Skill Listings */}
+      <section className="skill-listings-section">
+        <h2 className="section-title">Available Skills</h2>
+        {loading ? (
+          <p className="loading-message-text">Loading skills...</p>
+        ) : error ? (
+          <p className="error-message-text">{error}</p>
+        ) : skills.length > 0 ? (
+          <div className="skills-grid">
+            {skills.map((skill) => (
+              <SkillCard key={skill._id} skill={skill} />
+            ))}
+          </div>
+        ) : (
+          <p className="no-skills-message">
+            No matching skills found in the selected category.
+          </p>
+        )}
+      </section>
+    </div>
+  );
+};
+
+export default Browse;

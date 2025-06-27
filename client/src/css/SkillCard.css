@@ -1,4 +1,4 @@
-/* SkillCard.css */
+/* SkillCard.css - With Animations */
 :root {
   --primary-orange: #FF7000;
   --secondary-orange: #F97432;
@@ -12,21 +12,46 @@
   --border-gray: #e0e0e0;
 }
 
+/* Animation Keyframes */
+@keyframes fadeInSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
 .skill-card {
   background-color: var(--white);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   border: 1px solid rgba(255, 172, 74, 0.2);
   position: relative;
   overflow: hidden;
+  opacity: 0;
+  animation: fadeInSlideUp 0.6s ease-out forwards;
+  animation-delay: calc(var(--animation-order) * 0.1s);
+}
+
+.skill-card.animated {
+  opacity: 1;
 }
 
 .skill-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(255, 112, 0, 0.15);
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 8px 20px rgba(255, 112, 0, 0.2);
   border-color: rgba(255, 112, 0, 0.4);
 }
 
@@ -38,6 +63,12 @@
   width: 4px;
   height: 100%;
   background: linear-gradient(to bottom, var(--primary-orange), var(--accent-light));
+  transition: all 0.3s ease;
+}
+
+.skill-card:hover::before {
+  width: 6px;
+  background: linear-gradient(to bottom, var(--accent-light), var(--primary-orange));
 }
 
 .skill-card-title {
@@ -45,6 +76,11 @@
   font-size: 1.3rem;
   margin-bottom: 0.5rem;
   font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.skill-card:hover .skill-card-title {
+  color: var(--secondary-orange);
 }
 
 .skill-card-category {
@@ -56,6 +92,13 @@
   font-size: 0.8rem;
   font-weight: 500;
   margin-bottom: 1rem;
+  transition: all 0.3s ease;
+  transform-origin: left center;
+}
+
+.skill-card:hover .skill-card-category {
+  transform: scale(1.05);
+  background-color: var(--accent-lighter);
 }
 
 .skill-card-description {
@@ -63,6 +106,11 @@
   line-height: 1.6;
   margin-bottom: 1.25rem;
   font-size: 0.95rem;
+  transition: color 0.3s ease;
+}
+
+.skill-card:hover .skill-card-description {
+  color: var(--dark-text);
 }
 
 .skill-card-details {
@@ -78,16 +126,25 @@
   padding: 0.3rem 0.8rem;
   border-radius: 4px;
   font-weight: 500;
+  transition: all 0.3s ease;
 }
+
+
 
 .skill-card-swapfor {
   color: var(--dark-text);
   font-weight: 500;
+  transition: transform 0.3s ease;
 }
 
 .skill-card-swapfor::before {
   content: "🔁 ";
   color: var(--primary-orange);
+  transition: all 0.3s ease;
+}
+
+.skill-card:hover .skill-card-swapfor::before {
+  transform: rotate(10deg);
 }
 
 .skill-card-footer {
@@ -98,25 +155,51 @@
   color: #666;
   padding-top: 0.75rem;
   border-top: 1px dashed var(--border-gray);
+  transition: all 0.3s ease;
+}
+
+.skill-card:hover .skill-card-footer {
+  border-top-color: var(--accent-light);
 }
 
 .skill-card-username {
   color: var(--primary-orange);
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.2s;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.skill-card-username::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--brand-red);
+  transition: width 0.3s ease;
 }
 
 .skill-card-username:hover {
   color: var(--brand-red);
-  text-decoration: underline;
+  transform: translateX(3px);
+}
+
+.skill-card-username:hover::after {
+  width: 100%;
 }
 
 .skill-card-date {
   font-size: 0.8rem;
+  transition: color 0.3s ease;
 }
 
-/* Placeholder Style */
+.skill-card:hover .skill-card-date {
+  color: var(--secondary-orange);
+}
+
+/* Placeholder Style with Animation */
 .skill-card-placeholder {
   background-color: var(--light-gray);
   border-radius: 12px;
@@ -124,12 +207,28 @@
   text-align: center;
   color: #666;
   font-style: italic;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+/* Loading Animation */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skill-card-loading {
+  background: linear-gradient(90deg, var(--light-gray) 25%, #f0f0f0 50%, var(--light-gray) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+  min-height: 200px;
+  border-radius: 12px;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .skill-card {
     padding: 1.25rem;
+    animation-delay: 0s !important;
   }
   
   .skill-card-title {
@@ -141,3 +240,9 @@
     gap: 0.5rem;
   }
 }
+
+/* JavaScript Integration Note:
+   Add this to your component to trigger animations:
+   
+
+*/

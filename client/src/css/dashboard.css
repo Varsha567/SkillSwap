@@ -1,4 +1,4 @@
-/* dashboard.css */
+/* dashboard.css - With Animations */
 :root {
   /* Color Variables */
   --primary-orange: #FF7000;
@@ -14,32 +14,67 @@
   --white: #ffffff;
 }
 
-/* Base Styles */
+/* Animation Keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Base Styles with Animation Classes */
 .dashboard-container {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: var(--dark-text);
   line-height: 1.6;
 }
 
-/* Hero Section */
+/* Hero Section with Animations */
 .hero-section {
   background: linear-gradient(135deg, var(--primary-orange) 0%, var(--brand-red) 100%);
   color: var(--light-text);
   padding: 4rem 2rem;
   text-align: center;
   border-radius: 0 0 20px 20px;
+  overflow: hidden;
+}
+
+.hero-content {
+  animation: fadeIn 0.8s ease-out;
 }
 
 .hero-content h1 {
   font-size: 2.5rem;
   margin-bottom: 1rem;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.8s ease-out 0.2s both;
 }
 
 .hero-subtext {
   font-size: 1.2rem;
   max-width: 700px;
   margin: 0 auto 2rem;
+  animation: slideUp 0.8s ease-out 0.4s both;
 }
 
 .hero-buttons {
@@ -47,9 +82,10 @@
   gap: 1rem;
   justify-content: center;
   flex-wrap: wrap;
+  animation: slideUp 0.8s ease-out 0.6s both;
 }
 
-/* Button Styles */
+/* Button Styles with Enhanced Animations */
 .btn-primary {
   background-color: var(--primary-orange);
   color: var(--white);
@@ -58,13 +94,14 @@
   border-radius: 30px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transform-origin: center;
 }
 
 .btn-primary:hover {
   background-color: var(--secondary-orange);
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.05);
   box-shadow: 0 6px 12px rgba(255, 112, 0, 0.3);
 }
 
@@ -84,11 +121,19 @@
   transform: translateY(-2px);
 }
 
-/* How It Works Section */
+/* How It Works Section with Staggered Animations */
 .how-it-works-section {
   padding: 4rem 2rem;
   background-color: var(--white);
   text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease-out;
+}
+
+.how-it-works-section.animated {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .how-it-works-section h2 {
@@ -110,12 +155,19 @@
   border-radius: 12px;
   padding: 2rem;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   border-top: 4px solid var(--accent-light);
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.step-card.animated {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .step-card:hover {
-  transform: translateY(-10px);
+  transform: translateY(-10px) scale(1.02);
   box-shadow: 0 10px 25px rgba(255, 172, 74, 0.2);
 }
 
@@ -123,28 +175,59 @@
   font-size: 2.5rem;
   color: var(--primary-orange);
   margin-bottom: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.step-card:hover .step-icon {
+  transform: scale(1.1);
+  color: var(--secondary-orange);
 }
 
 .step-card h3 {
   color: var(--dark-text);
   margin-bottom: 1rem;
+  transition: color 0.3s ease;
 }
 
-/* Explore Skills CTA */
+.step-card:hover h3 {
+  color: var(--primary-orange);
+}
+
+/* Explore Skills CTA with Animation */
 .explore-skills-cta {
   padding: 4rem 2rem;
   background-color: var(--accent-lightest);
   text-align: center;
+  opacity: 0;
+  transition: all 0.6s ease-out 0.2s;
+}
+
+.explore-skills-cta.animated {
+  opacity: 1;
 }
 
 .explore-skills-cta h2 {
   color: var(--brand-red);
   margin-bottom: 1rem;
+  transform: scale(0.95);
+  transition: transform 0.4s ease-out 0.3s;
+}
+
+.explore-skills-cta.animated h2 {
+  transform: scale(1);
 }
 
 .explore-skills-cta p {
   max-width: 700px;
   margin: 0 auto 2rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.4s ease-out 0.5s;
+}
+
+.explore-skills-cta.animated p {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .cta-buttons {
@@ -154,7 +237,7 @@
   flex-wrap: wrap;
 }
 
-/* Testimonials Section */
+/* Testimonials Section with Staggered Animations */
 .testimonials-section {
   padding: 4rem 2rem;
   background-color: var(--white);
@@ -181,35 +264,76 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   border-left: 4px solid var(--accent-light);
   text-align: left;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.5s ease-out;
+}
+
+.testimonial-card.animated {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.testimonial-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(255, 172, 74, 0.2);
 }
 
 .quote {
   font-style: italic;
   margin-bottom: 1rem;
   color: var(--dark-text);
+  position: relative;
+}
+
+.quote::before {
+  content: '"';
+  font-size: 3rem;
+  color: var(--accent-light);
+  position: absolute;
+  left: -1rem;
+  top: -1rem;
+  opacity: 0.3;
+  line-height: 1;
 }
 
 .author {
   font-weight: 600;
   color: var(--secondary-orange);
+  display: flex;
+  align-items: center;
 }
 
-.no-testimonials-message {
-  color: var(--secondary-orange);
-  font-style: italic;
+.author::before {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 2px;
+  background-color: var(--accent-light);
+  margin-right: 0.5rem;
 }
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .hero-content h1 {
     font-size: 2rem;
+    animation: slideUp 0.6s ease-out 0.1s both;
   }
   
   .hero-subtext {
     font-size: 1rem;
+    animation: slideUp 0.6s ease-out 0.3s both;
+  }
+  
+  .hero-buttons {
+    animation: slideUp 0.6s ease-out 0.5s both;
   }
   
   .steps-container {
     grid-template-columns: 1fr;
+  }
+  
+  .step-card {
+    transition-delay: 0s !important;
   }
 }
