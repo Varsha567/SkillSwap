@@ -6,8 +6,7 @@ const authRoutes = require('./routes/authRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const skillRoutes = require('./routes/skillRoutes');
 const connectDB = require('./config/db');
-// FIX: Changed 'postRemainder' back to 'postReminders' to match actual filename
-const setupPostReminderCron = require('./cronJobs/postReminders'); 
+const setupPostReminderCron = require('./cronJobs/postRemainders'); 
 const passport = require('passport');
 
 // Import your Passport configuration - this file sets up your strategies
