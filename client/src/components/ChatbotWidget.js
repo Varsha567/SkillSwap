@@ -54,7 +54,7 @@ const ChatbotWidget = () => {
             // Add the current user message to the history for context
             chatHistoryForAPI.push({ type: 'user', text: trimmedMessage });
 
-            const response = await fetch('http://localhost:5000/api/chat/generate', {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/chat/generate`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
