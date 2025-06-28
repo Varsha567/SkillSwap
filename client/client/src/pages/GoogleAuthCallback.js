@@ -44,7 +44,7 @@ const GoogleAuthCallback = () => {
         navigate('/complete-profile', { replace: true });
       } else {
         setMessage('Login successful! Redirecting to dashboard...');
-        navigate('/dashboard', { replace: true });
+        navigate('/', { replace: true });
       }
 
     } else if (authError) {

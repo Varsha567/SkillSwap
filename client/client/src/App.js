@@ -58,11 +58,12 @@ function AppContent() {
         <Route element={<PublicOnlyRoute />}>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
+          
           <Route path="/forgotpassword" element={<ForgotPassword />} /> {/* NEW */}
           <Route path="/resetpassword/:token" element={<ResetPassword />} /> {/* NEW */}
         
         </Route>
+        <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
 
         <Route path="/" element={<Layout><Dashboard /></Layout>} />
           
