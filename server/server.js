@@ -6,12 +6,11 @@ const authRoutes = require('./routes/authRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const skillRoutes = require('./routes/skillRoutes');
 const connectDB = require('./config/db');
-const setupPostReminderCron = require('./cronJobs/postRemainders'); 
-const passport = require('passport');
-
+const setupPostReminderCron = require('./cronJobs/postRemainder'); 
+const passport = require('passport'); // Correctly import the main passport module
 // Import your Passport configuration - this file sets up your strategies
-// You should call the passport config function here with passport object
-require('./config/passport')(passport); // Corrected this line to pass passport object
+require('./config/passport');  // Import passport
+
 
 const dotenv = require('dotenv');
 dotenv.config();
