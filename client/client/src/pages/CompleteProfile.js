@@ -38,7 +38,7 @@ const CompleteProfile = () => {
       }
 
       try {
-        const response = await fetch('http://localhost:5000/api/profile/me', {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/profile/me`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -86,7 +86,7 @@ const CompleteProfile = () => {
       }
 
       try {
-        const response = await fetch(`http://localhost:5000/api/skills/user/${user._id}`, {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/skills/user/${user._id}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -130,7 +130,7 @@ const CompleteProfile = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/profile/complete', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/profile/complete`, {
         method: 'POST', 
         headers: {
           'Content-Type': 'application/json',
@@ -192,7 +192,7 @@ const CompleteProfile = () => {
 
     try {
       console.log(`Attempting to update status for post ${postId} to ${newStatus}`);
-      const response = await fetch(`http://localhost:5000/api/skills/${postId}/status`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/skills/${postId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -245,7 +245,7 @@ const CompleteProfile = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/skills/${postId}`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/skills/${postId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

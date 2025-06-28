@@ -49,7 +49,7 @@ const Browse = () => {
       }
       // Removed skillLevel and search query params
 
-      const response = await fetch(`http://localhost:5000/api/skills?${queryParams.toString()}`);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/skills?${queryParams.toString()}`);
       const data = await response.json();
 
       if (response.ok && data.listings) {

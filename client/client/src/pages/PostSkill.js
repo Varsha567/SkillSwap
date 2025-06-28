@@ -59,7 +59,7 @@ const PostSkill = () => {
 
       console.log('Sending post skill request with payload:', payload);
 
-      const response = await fetch('http://localhost:5000/api/skills', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/skills`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

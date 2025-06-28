@@ -54,7 +54,7 @@ const UserProfile = () => {
 
       try {
         // Fetch User Profile
-        const profileUrl = isCurrentUserProfile ? 'http://localhost:5000/api/profile/me' : `http://localhost:5000/api/profile/${idToFetch}`;
+        const profileUrl = isCurrentUserProfile ? `${process.env.REACT_APP_BACKEND_URL}/api/profile/me` : `${process.env.REACT_APP_BACKEND_URL}/api/profile/${idToFetch}`;
         const profileResponse = await fetch(profileUrl, { headers });
         const profileData = await profileResponse.json();
 
@@ -75,7 +75,7 @@ const UserProfile = () => {
 
       // Fetch User Posts
       try {
-        const postsResponse = await fetch(`http://localhost:5000/api/skills/user/${idToFetch}`, { headers });
+        const postsResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/skills/user/${idToFetch}`, { headers });
         const postsData = await postsResponse.json();
 
         if (postsResponse.ok && postsData.listings) {

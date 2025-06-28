@@ -41,7 +41,7 @@ const setupPostReminderCron = () => {
                         <p>Hi ${post.userId.username || post.userId.email},</p>
                         <p>It looks like your post titled "<strong>${post.title}</strong>" is still marked as 'active' on SkillSwap.</p>
                         <p>If the skill exchange has progressed or completed, please remember to update its status:</p>
-                        <p><a href="http://localhost:3000/my-profile">Go to My Profile (where your posts are listed)</a></p>
+                        <p><a href="${process.env.FRONTEND_URL}/my-profile">Go to My Profile (where your posts are listed)</a></p>
                         <p>Keeping your post status current helps other users find active opportunities and improves the community experience.</p>
                         <p>Thanks,</p>
                         <p>The SkillSwap Team</p>

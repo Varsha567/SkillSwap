@@ -1,53 +1,46 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // Reverted to original path
-import '../css/Login.css'; // Reverted to original path
-import google_logo from '../assets/google-logo.png'; // Reverted to original path
+import { useAuth } from '../context/AuthContext'; // Adjusted path
+import '../css/Login.css'; // Adjusted path
+import google_logo from '../assets/google-logo.png'; // Adjusted path
 
-const Signup = () => {
-    const [username, setUsername] = useState('');
+const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { login } = useAuth();
+    const { login } = useAuth(); // Get login function from AuthContext
 
-    const handleSignup = async (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
         setError('');
-
-        if (password !== confirmPassword) {
-            setError('Passwords do not match.');
-            return;
-        }
-
         setLoading(true);
 
         try {
-            const response = await fetch('http://localhost:5000/api/auth/register', {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, email, password }),
+                body: JSON.stringify({ email, password }),
             });
 
             const data = await response.json(); // Backend should send userId, username, email, profileComplete
 
             if (response.ok) {
-                console.log('Signup successful (raw backend response):', data);
+                console.log('Login successful (raw backend response):', data);
 
                 // Construct a complete user object from backend response
                 const userDataForContext = {
-                    _id: data.userId,
-                    id: data.userId,
+                    _id: data.userId, // Use _id for consistency with MongoDB IDs
+                    id: data.userId, // Keep 'id' for flexibility if other parts use it
                     username: data.username,
                     email: data.email,
                     profileComplete: data.profileComplete,
                 };
-                console.log('Signup successful (userData passed to AuthContext):', userDataForContext);
+
+                console.log('Login successful (userData passed to AuthContext):', userDataForContext);
                 login(data.token, userDataForContext);
 
                 // Navigate based on profileComplete status
@@ -58,11 +51,11 @@ const Signup = () => {
                 }
 
             } else {
-                setError(data.message || 'Signup failed. Please try again.');
+                setError(data.message || 'Login failed. Please check your credentials.');
             }
         } catch (err) {
-            console.error('Network error during signup:', err);
-            setError('An error occurred during signup. Please try again later.');
+            console.error('Network error during login:', err);
+            setError('An error occurred while logging in. Please try again later.');
         } finally {
             setLoading(false);
         }
@@ -71,20 +64,9 @@ const Signup = () => {
     return (
         <div className="auth-container">
             <div className="auth-card">
-                <h2>Join SkillSwap</h2>
-                <form onSubmit={handleSignup} className="auth-form">
+                <h2>Login to SkillSwap</h2>
+                <form onSubmit={handleLogin} className="auth-form">
                     {error && <p className="error-message">{error}</p>}
-                    <div className="form-group">
-                        <label htmlFor="username">Username</label>
-                        <input
-                            type="text"
-                            id="username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            required
-                            className="auth-input"
-                        />
-                    </div>
                     <div className="form-group">
                         <label htmlFor="email">Email</label>
                         <input
@@ -107,19 +89,13 @@ const Signup = () => {
                             className="auth-input"
                         />
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="confirmPassword">Confirm Password</label>
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            required
-                            className="auth-input"
-                        />
-                    </div>
+                    <p className="text-right text-sm">
+                        <Link to="/forgotpassword" className="auth-switch-link text-sm">
+                            Forgot Password?
+                        </Link>
+                    </p>
                     <button type="submit" className="auth-button" disabled={loading}>
-                        {loading ? 'Signing Up...' : 'Sign Up'}
+                        {loading ? 'Logging In...' : 'Login'}
                     </button>
                 </form>
 
@@ -129,17 +105,17 @@ const Signup = () => {
                     <p>OR</p>
                     <hr />
                 </div>
-                <button className="google-signin-button" onClick={() => window.location.href = 'http://localhost:5000/api/auth/google'}>
+                <button className="google-signin-button" onClick={() => window.location.href = `${process.env.REACT_APP_BACKEND_URL}/api/auth/google`}>
                     <img src={google_logo} alt="Google icon" className="google-icon" />
                     Continue with Google
                 </button>
 
                 <p className="auth-switch-link mt-4">
-                    Already have an account? <Link to="/login">Login</Link>
+                    Don't have an account? <Link to="/signup">Sign Up</Link>
                 </p>
             </div>
         </div>
     );
 };
 
-export default Signup;
+export default Login;
