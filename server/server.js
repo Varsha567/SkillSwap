@@ -21,7 +21,26 @@ app.use(cors());
 app.use(express.json());
 
 
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'supersecretkey', // Use a strong secret from .env
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        // secure: Must be true for SameSite=None, and should be true in production (HTTPS)
+        secure: process.env.NODE_ENV === 'production', 
+        
+        // SameSite:
+        // 'None' is required for cross-site cookies, but only if secure is true.
+        // 'Lax' is the default and good for same-site, but can break cross-site flows like OAuth in strict browsers.
+        // 'Strict' is even more restrictive.
+        sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // Set to 'None' only in production for cross-site
+        
+        maxAge: 1000 * 60 * 60 * 24 // 1 day session length (example)
+    }
+}));
+
 app.use(passport.initialize()); 
+app.use(passport.session());
 // Database connection
 connectDB();
 
