@@ -1,5 +1,3 @@
-
-````markdown
 # SkillSwap
 
 **Live Demo:** [https://skillswap-platform.netlify.app](https://skillswap-platform.netlify.app)
