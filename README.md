@@ -127,6 +127,3 @@ Appropriate environment variables and rewrite rules are configured on both platf
 
 For any questions or collaborations, feel free to reach out.
 
-
-```
-```
