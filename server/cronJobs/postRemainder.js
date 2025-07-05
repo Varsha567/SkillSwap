@@ -1,31 +1,32 @@
 const cron = require('node-cron');
 const Post = require('../models/PostS');
 const { sendEmail } = require('../utils/emailService');
-const User = require('../models/User'); // Ensure User model is imported if not already
+const User = require('../models/User'); 
 
 const setupPostReminderCron = () => {
-    // --- PRODUCTION SETTINGS ---
-    // Schedule: Runs daily at 3:00 AM
+    // --- TEMPORARY TEST SETTINGS ---
+    // Schedule: Runs every minute for testing purposes
+    // IMPORTANT: Change this back to '0 3 * * *' for production!
     cron.schedule('0 3 * * *', async () => { 
-        console.log('--- Running Post Status Reminder Check (PRODUCTION MODE) ---');
+        console.log('--- Running Post Status Reminder Check (TEST MODE - Every Minute) ---');
         const now = new Date();
         
         // Define reminder intervals in days
-        const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000); // 3 days ago
-        const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); // 7 days ago
+        const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000); 
+        const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); 
 
         try {
             const postsToRemind = await Post.find({
-                status: 'active', // Only target 'active' posts
-                lastStatusUpdate: { $lte: threeDaysAgo }, // First reminder: last updated more than 3 days ago
+                status: 'active', 
+                lastStatusUpdate: { $lte: threeDaysAgo }, 
                 $or: [
-                    { lastReminderSentAt: { $exists: false }, reminderCount: 0 }, // If no reminder sent yet (first reminder)
+                    { lastReminderSentAt: { $exists: false }, reminderCount: 0 }, 
                     {
-                        reminderCount: { $lt: 3 }, // Up to 3 reminders in total
-                        lastReminderSentAt: { $lte: sevenDaysAgo } // Subsequent reminders: last reminder was 7+ days ago
+                        reminderCount: { $lt: 3 }, 
+                        lastReminderSentAt: { $lte: sevenDaysAgo } 
                     }
                 ]
-            }).populate('userId', 'email username preferences'); // Populate userId to get user details
+            }).populate('userId', 'email username preferences'); 
 
             console.log(`Found ${postsToRemind.length} posts requiring reminders.`);
 
@@ -47,7 +48,12 @@ const setupPostReminderCron = () => {
                         <p>The SkillSwap Team</p>
                     `;
 
-                    const emailSent = await sendEmail(post.userId.email, subject, htmlContent);
+                    // FIX IS HERE: Pass an object to sendEmail
+                    const emailSent = await sendEmail({
+                        email: post.userId.email,
+                        subject: subject,
+                        html: htmlContent
+                    });
 
                     if (emailSent) {
                         post.reminderCount = (post.reminderCount || 0) + 1;
