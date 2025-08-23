@@ -13,7 +13,7 @@ import AboutUs from './pages/AboutUs';
 import ContactUs from './pages/ContactUs'; 
 import ForgotPassword from './pages/ForgotPassword'; // NEW
 import ResetPassword from './pages/ResetPassword'; // NEW
-
+import ChatPage from './components/Chat';
 // Import the Layout component
 import Layout from './components/Layout'; 
 // Import AuthProvider and useAuth from your AuthContext
@@ -77,6 +77,7 @@ function AppContent() {
           <Route path="/postskill" element={<Layout><PostSkill /></Layout>} />
           <Route path="/complete-profile" element={<Layout><CompleteProfile /></Layout>} />
           <Route path="/my-profile" element={<Layout><UserProfile /></Layout>} /> 
+           <Route path="/chat/:recipientId" element={<ChatPage />} />
         </Route>
 
         <Route path="/profile/:userId" element={<Layout><UserProfile /></Layout>} /> 

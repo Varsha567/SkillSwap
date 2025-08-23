@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const cors = require('cors');
+const http = require('http');
+const { Server } = require("socket.io");
 const authRoutes = require('./routes/authRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const skillRoutes = require('./routes/skillRoutes');
@@ -17,6 +19,15 @@ dotenv.config();
 
 const app = express();
 
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: process.env.FRONTEND_URL, // Your frontend URL
+    methods: ["GET", "POST"]
+  }
+});
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -31,6 +42,26 @@ app.use(session({
         maxAge: 1000 * 60 * 60 * 24
     }
 }));
+
+
+
+// Socket.io connection
+io.on('connection', (socket) => {
+  console.log('a user connected:', socket.id);
+
+  socket.on('join_room', (data) => {
+    socket.join(data);
+    console.log(`User with ID: ${socket.id} joined room: ${data}`);
+  });
+
+  socket.on('send_message', (data) => {
+    socket.to(data.room).emit('receive_message', data);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('user disconnected:', socket.id);
+  });
+});
 
 app.use(passport.initialize()); 
 app.use(passport.session());

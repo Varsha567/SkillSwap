@@ -9,6 +9,7 @@ const UserProfile = () => {
   const navigate = useNavigate();
   const { user: authUser, loading: authLoading } = useAuth(); // Get logged-in user and auth loading status
 
+  
   const [profile, setProfile] = useState(null);
   const [userPosts, setUserPosts] = useState([]); // State to store user's skill posts
   const [loadingProfile, setLoadingProfile] = useState(true); // Loading state for profile data
@@ -21,6 +22,16 @@ const UserProfile = () => {
   // This uses paramUserId for /profile/:userId and authUser._id for /my-profile
   const isCurrentUserProfile = authUser && (paramUserId === authUser._id || window.location.pathname === '/my-profile');
 
+  const handleStartChat = () => {
+        if (!authUser) {
+            // Redirect to login if user is not authenticated
+            navigate('/login');
+            return;
+        }
+        // Navigate to the chat page, passing the other user's ID
+        navigate(`/chat/${paramUserId}`);
+  };
+  
   // --- Effect to fetch User Profile Data ---
   useEffect(() => {
     const fetchProfileAndPosts = async () => {
@@ -156,11 +167,19 @@ const UserProfile = () => {
         
         {profile.discordHandle && (
           <p className="profile-detail discord-handle-display">
-            Discord: {profile.discordHandle} 
+            Discord Handle: {profile.discordHandle} 
             <button onClick={copyDiscordHandle} className="copy-button">
-              {copySuccess || 'Copy'}
+              {copySuccess || 'Copy'} 
             </button>
           </p>
+        )}
+        {isCurrentUserProfile && authUser && (
+                    <button
+                        onClick={handleStartChat}
+                        className="chat-button"
+                    >
+                        Chat with {profile.username || 'User'}
+                    </button>
         )}
         {profile.skillsOffered && profile.skillsOffered.length > 0 && (
           <p className="profile-detail">Skills Offered: {profile.skillsOffered.join(', ')}</p>
