@@ -83,7 +83,9 @@ useEffect(() => {
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-content">
-          <h1>Swap Skills. Grow Together.</h1>
+          
+          <h1>SkillSwap – Exchange Skills & Grow Together</h1>
+
           <p className="hero-subtext">
             Unlock your potential by exchanging knowledge and expertise with passionate individuals worldwide. No money. Just mutual growth.
           </p>
